@@ -189,7 +189,7 @@
     <span class="text-muted small">développé par Grégory Biondo sous</span>
     <a href="https://www.gnu.org/licenses/agpl-3.0.txt" class="text-muted small" target="_blank">licence Open Source GNU AGPL v3</a>
     <span class="text-muted small"> - </span>
-    <a href="https://github.com/votre-compte/votre-repo" class="text-muted small" target="_blank">Code source (AGPL v3)</a>
+    <a href="https://github.com/GregoryBiondo/rgesn-v2-audit" class="text-muted small" target="_blank">Code source (AGPL v3)</a>
 </footer>
 
 <!-- Modal : Nouvel audit -->
