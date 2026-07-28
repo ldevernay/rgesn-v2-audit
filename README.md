@@ -4,6 +4,8 @@
 
 Plateforme web d'audit d'écoconception numérique basée sur le Référentiel Général d'Écoconception des Services Numériques (RGESN) V2 2024. Permet de créer et gérer des audits, d'évaluer 78 critères répartis en 9 thématiques, et de générer des rapports publics partageables.
 
+Vous pouvez visualiser l'outil et le tester : [Outil d'audit RGESN V2 2024](https://axenum.fr/rgesn-v2-audit/)
+
 ## Stack technique
 
 - PHP 8.2+ (pas de framework)
