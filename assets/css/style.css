@@ -1,0 +1,1066 @@
+/*
+ * Copyright (C) 2026  Grégory Biondo
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/* ============================================================
+   RGESN V2 2024 Audit Tool — Styles personnalisés
+   Stack : Bootstrap 5.3 + CSS custom properties
+   ============================================================ */
+
+/* ── Variables ────────────────────────────────────────────── */
+:root {
+    --rgesn-indigo:       #6610f2;
+    --rgesn-indigo-dark:  #510bc4;
+    --rgesn-indigo-light: #e6dafc;
+    --rgesn-indigo-subtle:#f1ebfe;
+
+    --rgesn-conforme:     #198754;
+    --rgesn-nc:           #dc3545;
+    --rgesn-na:           #6c757d;
+    --rgesn-nt:           #fd7e14;
+
+    --header-height:      56px;
+    --subheader-height:   64px;
+    --sidebar-width:      260px;
+}
+
+/* ── Typographie générale ─────────────────────────────────── */
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: #1a1a2e;
+}
+
+/* ── Couleur indigo Bootstrap override ───────────────────── */
+.bg-indigo         { background-color: var(--rgesn-indigo) !important; }
+.text-indigo       { color: var(--rgesn-indigo) !important; }
+.border-indigo     { border-color: var(--rgesn-indigo) !important; }
+
+/* Champs de filtre (Projet, Auditeur, Statut) : bordure Bootstrap par défaut #dee2e6 ≈ 1,3:1 sur fond blanc (< 3:1 requis) */
+.filter-input {
+    border-color: #6c757d;
+}
+
+/* Bouton "Filtres" : le gris outline-secondary par défaut tombe à 4,45:1 sur le fond bg-light du bandeau (< 4,5:1 requis) */
+#btnToggleFilters.btn-outline-secondary {
+    color: #41464b;
+    border-color: #41464b;
+}
+#btnToggleFilters.btn-outline-secondary:hover,
+#btnToggleFilters.btn-outline-secondary:focus {
+    background-color: #41464b;
+    border-color: #41464b;
+    color: #fff;
+}
+
+.btn-indigo {
+    background-color: var(--rgesn-indigo);
+    border-color:     var(--rgesn-indigo);
+    color: #fff;
+}
+.btn-indigo:hover,
+.btn-indigo:focus {
+    background-color: var(--rgesn-indigo-dark);
+    border-color:     var(--rgesn-indigo-dark);
+    color: #fff;
+}
+.btn-indigo:disabled {
+    background-color: var(--rgesn-indigo);
+    border-color:     var(--rgesn-indigo);
+    opacity: 0.6;
+}
+
+.btn-outline-indigo {
+    color: var(--rgesn-indigo);
+    border-color: var(--rgesn-indigo);
+    background-color: transparent;
+}
+.btn-outline-indigo:hover,
+.btn-outline-indigo:focus {
+    background-color: var(--rgesn-indigo);
+    border-color:     var(--rgesn-indigo);
+    color: #fff;
+}
+
+/* .btn-indigo/.btn-outline-indigo sont des classes maison : Bootstrap ne leur définit pas
+   --bs-btn-focus-shadow-rgb, donc son anneau de focus (box-shadow) ne s'affiche jamais
+   alors que outline:0 supprime le contour natif. Indicateur de focus dédié requis. */
+.btn-indigo:focus-visible,
+.btn-outline-indigo:focus-visible {
+    outline: 2px solid var(--rgesn-indigo);
+    outline-offset: 2px;
+}
+
+/* ── Header application ───────────────────────────────────── */
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    height: var(--header-height);
+    background: #fff;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+}
+
+.header-brand {
+    color: #1a1a2e;
+}
+.header-brand:hover { color: var(--rgesn-indigo); }
+
+.header-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a2e;
+}
+
+/* ── Dashboard ────────────────────────────────────────────── */
+.badge-status-done {
+    background-color: var(--rgesn-indigo-subtle);
+    color: var(--rgesn-indigo);
+    border: 1px solid var(--rgesn-indigo-light);
+    font-weight: 500;
+}
+.badge-status-progress {
+    background-color: #fff3cd;
+    color: #664d03;
+    border: 1px solid #ffecb5;
+    font-weight: 500;
+}
+
+/* ── Page Audit ───────────────────────────────────────────── */
+.audit-page {
+    background: #f8f9fa;
+}
+
+/* Sous-header avec progression */
+.audit-subheader {
+    background: #fff;
+    border-bottom: 1px solid #e9ecef;
+    padding: 12px 0;
+    position: sticky;
+    top: var(--header-height);
+    z-index: 1020;
+}
+
+/* Barre de stats */
+.audit-stats-bar {
+    background: #fff;
+    border-bottom: 1px solid #e9ecef;
+    padding: 16px 0;
+}
+
+.stat-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 16px 24px;
+    text-align: center;
+    border: 1px solid #e9ecef;
+    min-width: 140px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.stat-card-score { border-left: 4px solid var(--rgesn-indigo); }
+.stat-card-nc    { border-left: 4px solid var(--rgesn-nc); }
+.stat-card-ok    { border-left: 4px solid var(--rgesn-conforme); }
+.stat-card-na    { border-left: 4px solid var(--rgesn-na); }
+.stat-card-nt    { border-left: 4px solid #ce7d3b; }
+
+.stat-card-clickable {
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    user-select: none;
+}
+.stat-card-clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+.stat-card-nc.stat-card-active {
+    background: #fff5f5;
+    outline: 2px solid var(--rgesn-nc);
+    outline-offset: -1px;
+}
+.stat-card-ok.stat-card-active {
+    background: #f0faf5;
+    outline: 2px solid var(--rgesn-conforme);
+    outline-offset: -1px;
+}
+.stat-card-na.stat-card-active {
+    background: #f5f5f6;
+    outline: 2px solid var(--rgesn-na);
+    outline-offset: -1px;
+}
+.stat-card-nt.stat-card-active {
+    background: #fff8f2;
+    outline: 2px solid #ce7d3b;
+    outline-offset: -1px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #1a1a2e;
+}
+.stat-card-score .stat-value { color: var(--rgesn-indigo); }
+.stat-card-nc .stat-value    { color: var(--rgesn-nc); }
+.stat-card-ok .stat-value    { color: var(--rgesn-conforme); }
+.stat-card-na .stat-value    { color: var(--rgesn-na); }
+.stat-card-nt .stat-value    { color: #ce7d3b; }
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #5c636a;
+    line-height: 1.3;
+    margin-top: 4px;
+}
+.stat-sub {
+    font-size: 0.65rem;
+    color: #5c636a;
+    margin-top: 2px;
+}
+
+/* ── Layout audit : sidebar + main ───────────────────────── */
+.audit-layout {
+    min-height: calc(100vh - var(--header-height) - var(--subheader-height));
+}
+
+/* Sidebar */
+.audit-sidebar {
+    width: var(--sidebar-width);
+    flex-shrink: 0;
+    position: sticky;
+    top: calc(var(--header-height) + var(--subheader-height) + 1px);
+    height: calc(100vh - var(--header-height) - var(--subheader-height) - 1px);
+    overflow-y: auto;
+    background: #fff;
+    border-right: 1px solid #e9ecef;
+}
+
+.sidebar-inner {
+    padding: 20px 16px;
+}
+
+.sidebar-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6c757d;
+    margin-bottom: 12px;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #495057;
+    font-size: 0.875rem;
+    transition: background 0.15s, color 0.15s;
+    position: relative;
+}
+.sidebar-link:hover {
+    background: var(--rgesn-indigo-subtle);
+    color: var(--rgesn-indigo);
+}
+.sidebar-link.active {
+    background: var(--rgesn-indigo-light);
+    color: var(--rgesn-indigo);
+    font-weight: 600;
+}
+
+.sidebar-link-num {
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #e9ecef;
+    color: #495057;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.sidebar-link.active .sidebar-link-num {
+    background: var(--rgesn-indigo);
+    color: #fff;
+}
+
+.sidebar-link-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+.sidebar-progress {
+    width: 100%;
+    height: 3px;
+    background: #e9ecef;
+    border-radius: 2px;
+    margin-top: 4px;
+}
+.sidebar-progress-bar {
+    height: 100%;
+    background: var(--rgesn-indigo);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.sidebar-footer {
+    padding-top: 16px;
+    border-top: 1px solid #e9ecef;
+}
+
+/* Main audit content */
+.audit-main {
+    flex: 1;
+    padding: 24px 47px 24px 32px;
+    min-width: 0;
+}
+
+/* ── Thématique section ───────────────────────────────────── */
+.thematic-section {
+    margin-bottom: 48px;
+    scroll-margin-top: calc(var(--header-height) + var(--subheader-height) + 24px);
+}
+
+.thematic-header {
+    background: #fff;
+    border-radius: 12px 12px 0 0;
+    padding: 20px 24px;
+    border: 1px solid #ced4da;
+    border-bottom: 2px solid var(--rgesn-indigo);
+    margin-bottom: 0;
+}
+
+.thematic-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--rgesn-indigo);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.875rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.thematic-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1a1a2e;
+}
+
+/* ── Criterion card ───────────────────────────────────────── */
+.criterion-card {
+    background: #fff;
+    border: 1px solid #ced4da;
+    padding: 0;
+    margin-bottom: 30px;
+    transition: border-left-color 0.2s, background 0.2s;
+}
+
+.criterion-card:last-child {
+    border-radius: 0 0 12px 12px;
+}
+
+.criterion-card-conforme {
+    border-left: 4px solid var(--rgesn-conforme);
+}
+.criterion-card-nonconforme {
+    border-left: 4px solid var(--rgesn-nc);
+}
+.criterion-card-na {
+    border-left: 4px solid var(--rgesn-na);
+}
+
+/* Criterion header */
+.criterion-header {
+    padding: 16px 20px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.criterion-id {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--rgesn-indigo);
+    background: var(--rgesn-indigo-subtle);
+    padding: 2px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-family: monospace;
+}
+
+.criterion-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    line-height: 1.5;
+}
+
+/* Status row */
+.criterion-status-row {
+    padding: 4px 20px 12px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.status-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.btn-status {
+    font-size: 0.8rem;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-weight: 500;
+    border-width: 1.5px;
+    transition: all 0.15s;
+}
+
+.btn-status-conforme {
+    color: #5c636a;
+    border-color: #ced4da;
+    background: #f8f9fa;
+}
+.btn-check:checked + .btn-status-conforme {
+    background-color: #157347;
+    border-color:     #157347;
+    color: #fff;
+}
+.btn-check + .btn-status-conforme:hover {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+    color: #212529;
+}
+
+.btn-status-nonconforme {
+    color: #5c636a;
+    border-color: #ced4da;
+    background: #f8f9fa;
+}
+.btn-check:checked + .btn-status-nonconforme {
+    background-color: #b02a37;
+    border-color:     #b02a37;
+    color: #fff;
+}
+.btn-check + .btn-status-nonconforme:hover {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+    color: #212529;
+}
+
+.btn-status-na {
+    color: #5c636a;
+    border-color: #ced4da;
+    background: #f8f9fa;
+}
+.btn-check:checked + .btn-status-na {
+    background-color: #5c636a;
+    border-color:     #5c636a;
+    color: #fff;
+}
+.btn-check + .btn-status-na:hover {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+    color: #212529;
+}
+
+/* .btn-status-* sont des classes maison : comme .btn-indigo, elles ne définissent pas
+   --bs-btn-focus-shadow-rgb, donc l'anneau de focus natif de Bootstrap ne s'affiche jamais
+   alors que outline:0 supprime le contour. Indicateur de focus dédié requis. */
+.btn-check:focus-visible + .btn-status {
+    outline: 2px solid var(--rgesn-indigo);
+    outline-offset: 2px;
+}
+
+
+/* Accordéons */
+.criterion-accordions {
+    border-top: 1px solid #f0f0f0;
+}
+
+.criterion-accordion-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #495057;
+    font-weight: 500;
+    text-align: left;
+    transition: background 0.15s, color 0.15s;
+}
+.criterion-accordion-btn:hover,
+.criterion-accordion-btn[aria-expanded="true"] {
+    background: var(--rgesn-indigo-subtle);
+    color: var(--rgesn-indigo);
+}
+.criterion-accordion-btn::after {
+    content: "\F282"; /* bi-chevron-down */
+    font-family: "bootstrap-icons";
+    margin-left: auto;
+    transition: transform 0.2s;
+    font-size: 0.75rem;
+}
+.criterion-accordion-btn[aria-expanded="true"]::after {
+    transform: rotate(-180deg);
+}
+.criterion-accordion-btn.has-content {
+    color: var(--rgesn-indigo);
+}
+
+.criterion-comment {
+    font-size: 0.875rem;
+    border-color: #8093A3;
+    background-color: #f8f9fa;
+    resize: vertical;
+    min-height: 80px;
+}
+.criterion-comment:focus {
+    border-color: var(--rgesn-indigo);
+    box-shadow: 0 0 0 3px rgba(102, 16, 242, 0.1);
+}
+
+/* Détail du critère */
+.criterion-detail-body {
+    padding: 20px;
+}
+.criterion-detail-section {
+    margin-bottom: 20px;
+}
+.criterion-detail-section:last-child { margin-bottom: 0; }
+
+.criterion-detail-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6c757d;
+    margin-bottom: 8px;
+}
+
+.criterion-detail-text {
+    font-size: 0.8rem;
+    color: #495057;
+    line-height: 1.6;
+}
+.criterion-detail-text p,
+.criterion-detail-text ul {
+    margin-bottom: 0.5rem;
+}
+.criterion-detail-text p:last-child,
+.criterion-detail-text ul:last-child { margin-bottom: 0; }
+.criterion-detail-text ul { padding-left: 1.25rem; }
+
+/* Rapport public : commentaires/actions saisis par l'auditeur (nl2p avec listes) */
+.report-rich-text p,
+.report-rich-text ul {
+    margin-bottom: 0.5rem;
+}
+.report-rich-text p:last-child,
+.report-rich-text ul:last-child { margin-bottom: 0; }
+.report-rich-text ul { padding-left: 1.25rem; }
+
+/* Pied du critère */
+.criterion-footer {
+    padding: 10px 20px;
+    background: #fafafa;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.criterion-meta-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.criterion-meta-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #5c636a;
+    font-weight: 600;
+    margin-right: 4px;
+}
+
+.criterion-meta-value {
+    font-size: 0.78rem;
+    color: #495057;
+}
+
+/* Badges priorité / difficulté */
+.badge-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border: 1.5px solid;
+}
+
+.badge-priority-high {
+    background: #fde8e8;
+    color: #b91c1c;
+    border-color: #fca5a5;
+}
+.badge-priority-medium {
+    background: #fff3cd;
+    color: #92400e;
+    border-color: #fcd34d;
+}
+.badge-priority-low {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-color: #93c5fd;
+}
+
+.badge-diff-high,
+.badge-diff-medium,
+.badge-diff-low {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+.badge-diff-high   { background: #fde8e8; color: #b91c1c; }
+.badge-diff-medium { background: #fff3cd; color: #92400e; }
+.badge-diff-low    { background: #dbeafe; color: #1d4ed8; }
+
+.badge-job {
+    background: #e8eaf6;
+    color: #3949ab;
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 2px;
+}
+
+/* ── Indicateur de sauvegarde ─────────────────────────────── */
+.save-indicator {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    transition: all 0.3s;
+}
+.save-idle    { background: #e9ecef; color: #5c636a; }
+.save-saving  { background: #fff3cd; color: #664d03; }
+.save-error   { background: #f8d7da; color: #842029; }
+
+/* ── Page Rapport ─────────────────────────────────────────── */
+.report-page {
+    min-height: 100vh;
+}
+
+.report-score-block {
+    background: linear-gradient(135deg, var(--rgesn-indigo-subtle) 0%, #fff 100%);
+    border: 1px solid var(--rgesn-indigo-light);
+    border-radius: 16px;
+    padding: 28px 32px;
+}
+
+.report-score-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--rgesn-indigo);
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    color: #fff;
+    padding-top: 26px;
+}
+.report-score-value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1;
+}
+.report-score-unit {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-left: 2px;
+}
+
+.report-score-bar {
+    background: linear-gradient(90deg, var(--rgesn-indigo), #8b3efa);
+}
+
+.nc-criterion-card {
+    background: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    padding: 16px 20px;
+    border-left: 3px solid var(--rgesn-nc);
+}
+
+/* Tags rouge/vert/gris (page rapport) : fond éclairci pour atteindre 4,5:1 avec le texte, inchangé */
+.report-page .bg-danger-subtle    { background-color: #fff !important; }
+.report-page .bg-success-subtle   { background-color: #fff !important; }
+.report-page .bg-secondary-subtle { background-color: #fff !important; }
+
+.letter-spacing { letter-spacing: 0.08em; }
+
+/* ── Print styles ────────────────────────────────────────── */
+@media print {
+    .app-header,
+    .d-print-none { display: none !important; }
+    .d-print-block { display: block !important; }
+    .d-none.d-print-block { display: block !important; }
+
+    body {
+        font-size: 11pt;
+        color: #000;
+    }
+
+    .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+
+    .report-score-block {
+        background: #f8f9fa !important;
+        border: 1px solid #dee2e6 !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .report-score-circle {
+        background: var(--rgesn-indigo) !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .table { font-size: 9pt; }
+
+    .page-break-before { page-break-before: always; }
+
+    /* Blocs de synthèse globale : 3 colonnes et hauteur réduite en impression */
+    .summary-cards-row > .col-md-4 {
+        flex: 0 0 auto;
+        width: 33.3333%;
+    }
+
+    .summary-cards-row .card-body {
+        padding-top: 0.65rem !important;
+        padding-bottom: 0.65rem !important;
+    }
+
+    .nc-criterion-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    a[href]:after { content: none !important; }
+}
+
+/* ── Bouton retour en haut ───────────────────────────────── */
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 8px;
+    z-index: 1050;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #dee2e6;
+    background: #e9ecef;
+    color: #6c757d;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.back-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+.back-to-top:hover {
+    background: #dee2e6;
+    color: #343a40;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .audit-sidebar {
+        display: none;
+    }
+    .audit-main {
+        padding: 16px;
+    }
+    .stat-card {
+        min-width: 110px;
+        padding: 12px 16px;
+    }
+    .stat-value { font-size: 1.5rem; }
+}
+
+/* ── Scrollbar sidebar ───────────────────────────────────── */
+.audit-sidebar::-webkit-scrollbar { width: 4px; }
+.audit-sidebar::-webkit-scrollbar-track { background: transparent; }
+.audit-sidebar::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 2px; }
+.audit-sidebar::-webkit-scrollbar-thumb:hover { background: #adb5bd; }
+
+/* ── Animations ──────────────────────────────────────────── */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.criterion-card { animation: fadeIn 0.2s ease; }
+
+/* ── Tag input "Qui fait ?" ───────────────────────────────── */
+.action-tag {
+    font-size: 0.78rem;
+    padding: 3px 6px 3px 8px;
+    border-radius: 4px;
+}
+.action-tag .btn-close {
+    opacity: 0.5;
+}
+.action-tag .btn-close:hover {
+    opacity: 1;
+}
+.action-who-suggestions {
+    max-height: 200px;
+    overflow-y: auto;
+}
+.criterion-action-who-input,
+.criterion-action-when,
+.criterion-action-easy,
+#editProjectName,
+#editProjectUrl,
+#editAuditorName {
+    border-color: #8093A3;
+}
+.criterion-action-who-input:focus,
+.criterion-action-when:focus {
+    border-color: var(--rgesn-indigo);
+    box-shadow: 0 0 0 3px rgba(102, 16, 242, 0.1);
+}
+
+/* Actions dans le rapport public */
+.report-actions-block { display: none; }
+body.report-show-actions .report-actions-block { display: block; }
+
+/* ── Tableau des audits : largeur de colonnes stable ────────── */
+.audits-table {
+    table-layout: fixed;
+    width: 100%;
+    min-width: 1320px;
+}
+.caption-sr-only {
+    position: static;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ── Tableau des audits : tri et filtres ────────────────────── */
+th.sortable {
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: normal;
+    overflow-wrap: normal;
+}
+th.sortable:hover { color: var(--rgesn-indigo); }
+th.sortable .sort-btn {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+th.sortable .sort-btn:focus-visible {
+    outline: 2px solid var(--rgesn-indigo);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+.sort-icon { font-size: 0.65rem; margin-left: 2px; opacity: 0.35; vertical-align: 1px; }
+th.sortable.sort-active .sort-icon { opacity: 1; color: var(--rgesn-indigo); }
+
+.filters-row th {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    background: #fff;
+    border-top: 1px solid #e9ecef;
+}
+
+.date-filter-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.date-filter-btn-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.number-filter-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.number-filter-btn-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ── Curseur double poignée (filtres Taux / Avancement) ─────── */
+.range-slider {
+    height: 24px;
+}
+.range-slider-track {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #e9ecef;
+    border-radius: 2px;
+    transform: translateY(-50%);
+}
+.range-slider-fill {
+    position: absolute;
+    top: 50%;
+    height: 4px;
+    background: var(--rgesn-indigo);
+    border-radius: 2px;
+    transform: translateY(-50%);
+}
+.range-slider-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 24px;
+    margin: 0;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    pointer-events: none;
+}
+.range-slider-input:focus-visible {
+    outline: none;
+}
+.range-slider-input::-webkit-slider-runnable-track {
+    background: transparent;
+    height: 24px;
+}
+.range-slider-input::-moz-range-track {
+    background: transparent;
+    height: 24px;
+    border: none;
+}
+.range-slider-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    pointer-events: auto;
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+    border-radius: 50%;
+    background: var(--rgesn-indigo);
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+}
+.range-slider-input::-moz-range-thumb {
+    pointer-events: auto;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--rgesn-indigo);
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+}
+.range-slider-input:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px var(--rgesn-indigo);
+}
+.range-slider-input:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 3px var(--rgesn-indigo);
+}
+
+/* Focus programmatique ramené sur le tableau après fermeture d'une modale de filtre */
+#auditsTable:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 3px var(--rgesn-indigo);
+}
+
+/* ── Pagination des audits ──────────────────────────────────── */
+.pagination .page-link { color: var(--rgesn-indigo); }
+.pagination .page-item.active .page-link {
+    background-color: var(--rgesn-indigo);
+    border-color: var(--rgesn-indigo);
+    color: #fff;
+}
+.pagination .page-item.disabled .page-link { color: #adb5bd; }
+
+/* Smooth scrolling */
+html { scroll-behavior: smooth; }

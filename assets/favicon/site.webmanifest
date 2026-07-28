@@ -1,0 +1,19 @@
+{
+    "name": "Outil d'audit RGESN V2 2024",
+    "short_name": "Audit RGESN",
+    "icons": [
+        {
+            "src": "android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#6610f2",
+    "background_color": "#6610f2",
+    "display": "standalone"
+}
