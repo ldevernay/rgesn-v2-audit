@@ -2,9 +2,19 @@
 
 # Outil d'audit RGESN V2 2024
 
-Plateforme web d'audit d'écoconception numérique basée sur le Référentiel Général d'Écoconception des Services Numériques (RGESN) V2 2024. Permet de créer et gérer des audits, d'évaluer 78 critères répartis en 9 thématiques, et de générer des rapports publics partageables.
+Plateforme web d'audit d'écoconception numérique basée sur le Référentiel Général d'Écoconception des Services Numériques (RGESN V2 de 2024). Il permet de créer et gérer des audits, d'évaluer les 78 critères répartis en 9 thématiques du RGESN V2, et de générer des rapports publics partageables.
 
-Vous pouvez visualiser l'outil et le tester : [Outil d'audit RGESN V2 2024](https://axenum.fr/rgesn-v2-audit/)
+Vous pouvez visualiser l'outil et le tester en démonstration : [Outil d'audit RGESN V2 2024](https://axenum.fr/rgesn-v2-audit/)
+
+## Public-cible
+
+- Les **consultants spécialistes du numérique responsable** qui font des audits d'écoconception avec le RGESN V2.
+- Les **agences web et digitales** qui font des auto-audits d'écoconception en interne sur les services numériques développés pour leurs clients.
+
+## Conseil de déploiement
+
+Cet outil est destiné à un déploiement sur votre infrastructure, soit en local, soit sur vos serveurs, afin que vous puissiez centraliser l'ensemble de vos audits d'écoconception.
+L'outil ne dispose pas actuellement de fonctionnalité d'authentification, afin de ne pas rajouter une base de données à celui-ci. Les données sont directement enregistrées dans un fichier JSON par audit. Ce qui facilite les transferts si besoin.
 
 ## Stack technique
 
