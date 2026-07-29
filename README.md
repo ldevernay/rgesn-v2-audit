@@ -11,6 +11,16 @@ Vous pouvez visualiser l'outil et le tester en démonstration : [Outil d'audit R
 - Les **consultants spécialistes du numérique responsable** qui font des audits d'écoconception avec le RGESN V2.
 - Les **agences web et digitales** qui font des auto-audits d'écoconception en interne sur les services numériques développés pour leurs clients.
 
+## Fonctionnalités
+
+- **Gestion des audits** : création, modification, duplication et suppression d'audits ; tableau de bord avec pagination, tri par colonne, recherche et filtres (projet, auditeur, statut, dates, taux, avancement).
+- **Évaluation des 78 critères RGESN V2** répartis en 9 thématiques, avec quatre statuts possibles (Conforme, Non conforme, Non applicable, Non testé) et documentation intégrée par critère (objectif, mise en œuvre, moyen de contrôle).
+- **Score de conformité pondéré** selon la priorité des critères (Prioritaire ×1,5, Recommandé ×1,25, Modéré ×1,0), calculé et sauvegardé en temps réel, avec suivi de la progression par thématique.
+- **Commentaires libres** par critère pour consigner observations et recommandations.
+- **Plan d'actions** : accordéon dédié par critère pour planifier les mesures correctives (actions à mener, responsable, échéance), avec indicateur "Facile à corriger".
+- **Rapport public** partageable en lecture seule, avec synthèse par thématique, détail des critères, affichage optionnel des actions, export PDF (impression navigateur) et export Markdown structuré pour exploitation par un LLM.
+- **Sauvegarde automatique** des données au fil de la saisie, dans un fichier JSON par audit (écriture atomique).
+
 ## Conseil de déploiement
 
 Cet outil est destiné à un déploiement sur votre infrastructure, soit en local, soit sur vos serveurs, afin que vous puissiez centraliser l'ensemble de vos audits d'écoconception.
