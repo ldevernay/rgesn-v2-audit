@@ -1,0 +1,990 @@
+{
+    "id": "0e8d0db1-5b6b-420b-9526-6e68a469f71a",
+    "created_at": "2026-07-15T09:37:56+02:00",
+    "updated_at": "2026-07-17T08:22:45+02:00",
+    "status": "terminé",
+    "score": 68.8,
+    "project": {
+        "name": "Site LauDevSat",
+        "url": "https://www.laudevsat.fr"
+    },
+    "auditor": {
+        "name": "Laurent Devernay Satyagraha"
+    },
+    "criteria": [
+        {
+            "thematic_id": 1,
+            "id": "1.1",
+            "priority": "Prioritaire",
+            "difficulty": "Fort",
+            "status": "conforme",
+            "comment": "L’utilisation du numérique pour ce service est-elle nécessaire ?\nL'idée de ce site est de mettre en avant ce que je propose, mon expertise et proposer un moyen de me contacter. \n\nExiste-t-il d’autres solutions non numériques pour répondre à ce besoin ?\nJ'ai une carte de visite mais ça touche beaucoup moins de gens. \n\nQuels sont les réels besoins justifiant la création du service ?\nComme vu plus haut : présenter services, expertise et contenus + proposer un moyen de me contacter. \n\nLa valeur ajoutée du service justifie-t-elle la mobilisation des ressources requises pour sa création ? Est-ce qu’on crée plus de valeur qu’on en détruit ?\nLe site a pour vocation la prospection et le partage. In fine, sachant que je propose des prestations autour de l'écoconception, j'ai bon espoir que tout ceci aboutisse à une réduction d'impacts environnementaux. \n\nPour chaque fonctionnalité, est-elle vraiment nécessaire ? Peut-on faire autrement ?\nPas vraiment de fonctionnalité spéciale sur le site : pas d'interaction, quasiment que de l'info. D'où le site statique. \n\nQue se passerait-il si on ne l’avait pas ?\nCe serait très embêtant pour moi niveau prospection et surtout partage. Pour ce qui est du partage, c'est un moyen pour moi d'avoir un support aussi léger que possible.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 1,
+            "id": "1.2",
+            "priority": "Prioritaire",
+            "difficulty": "Faible",
+            "status": "conforme",
+            "comment": "Non, c'est un site statique visant le partage et la prospection pour des personnes intéressées par le Numérique Responsable et l'écoconception.\nElle vise à leur fournir des informations utiles via les articles, à présenter mes services et références aux clients potentiels et à me présenter au cas où.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 1,
+            "id": "1.3",
+            "priority": "Recommandé",
+            "difficulty": "Faible",
+            "status": "conforme",
+            "comment": "Oui, c'est moi. \nLaurent Devernay Satyagraha : laurent.devernay@etik.com.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 1,
+            "id": "1.4",
+            "priority": "Prioritaire",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Oui, c'est l'idée. \nSuite au premier audit RGESN, des revues sont prévues tous les six mois. \nEn parallèle, le site est remesuré régulièrement avec MilleCheck : https://millecheck.ai/fr/result/20260715-jfsp0jf/",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 1,
+            "id": "1.5",
+            "priority": "Prioritaire",
+            "difficulty": "Fort",
+            "status": "conforme",
+            "comment": "Je ne compte pas lancer une ACV complète sur mon site.\nLes outils actuels sont très limités en termes de mesures et d'indicateurs environnementaux. \nPour autant, MilleCheck fournit régulièrement les impacts en termes de GES et eau. \nPar exemple pour la page d'accueil : \n* 1,35 g CO2e / visite\n* 2,03 cl / visite \n\nMon idéal serait de réduire ces impacts. A minima, il s'agit déjà de rester en-dessous des moyennes indiquées : \n* 2g CO2e / visite\n* 3 cl d'eau / visite",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 1,
+            "id": "1.6",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Pas de données collectées/ stockées.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 1,
+            "id": "1.7",
+            "priority": "Modéré",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Pas de mécanismes de chiffrement.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 1,
+            "id": "1.8",
+            "priority": "Recommandé",
+            "difficulty": "Fort",
+            "status": "conforme",
+            "comment": "Le site repose exclusivement sur des technologies open source :\n* Jekyll : https://jekyllrb.com/\n* Thème Serif : https://jekyll-serif.netlify.app/\n\nL'intégralité du contenu et du code sont disponibles sur github : https://github.com/ldevernay/ldevernay_pro\nLes icônes proviennent de Susty Icons : https://sustyicons.com/",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 1,
+            "id": "1.9",
+            "priority": "Prioritaire",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Ce site web statique repose sur des technologies standard et interopérables avec pour vocation d'être utilisé sur tout type de terminal et navigateur.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 1,
+            "id": "1.10",
+            "priority": "Recommandé",
+            "difficulty": "Fort",
+            "status": "non-applicable",
+            "comment": "Le service numérique ne repose pas sur un objet connecté ou un périphérique matériel",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 2,
+            "id": "2.1",
+            "priority": "Prioritaire",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Le site est pensé pour utilisable a minima sur n'importe quel ordi/téléphone/tablette, quel que soit le navigateur, y compris avec une connexion dégradée. \nD'où le choix de proposer un site statique aussi léger que possible, histoire de pleinement tirer profit des technologies web standard, notamment en termes de compatibilité.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 2,
+            "id": "2.2",
+            "priority": "Prioritaire",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Je teste régulièrement sur mon propre téléphone (Honor 9 lite de 2017), en tout cas à chaque modif sur le site. Ce qui arrive au moins une fois par mois. Chaque page doit être chargée en moins de 10s.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 2,
+            "id": "2.3",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "A chaque modification (au moins une fois par mois), le site est testé sur PC en simulant une connexion dégradée dans Chromium. Chaque page doit être chargée en moins de 10s.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 2,
+            "id": "2.4",
+            "priority": "Prioritaire",
+            "difficulty": "Moyen",
+            "status": "non-conforme",
+            "comment": "Le site ne comporte pas de fonctionnalité critique à proprement parler : il est avant tout statique. \nIl faudrait toutefois que je le teste sur des terminaux anciens, peut-être via BrowserStack.",
+            "action_text": "Mettre en place un outil pour tester sur des terminaux et navigateurs anciens (BrowserStack?).",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2026-12",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 2,
+            "id": "2.5",
+            "priority": "Prioritaire",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Le thème du site est pensé mobile-first. \nIl est testé en 720px de haut sur téléphone et en 1200px de large sur ordinateur : toute l'information est bien visible sans scroll horizontal, de même que les composants de navigation (menu et liens).",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 2,
+            "id": "2.6",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "non-conforme",
+            "comment": "Il y a bien eu une revue de design sommaire : choix d'un thème aussi léger que possible puis ajustements pour le rendre plus sobre. \nLorsque des composants sont ajoutés, ils ne le sont que si vraiment nécessaire et toujours de la façon la plus efficiente possible. \nEn revanche, une revue de code devrait être mise en place.",
+            "action_text": "Revue de code avec Creedengo ou autre.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2026-12",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 2,
+            "id": "2.7",
+            "priority": "Prioritaire",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Le site n'est déployé que sur un seul environnement. \nSon décommissionnement n'est pas prévu (ni souhaitable). \nEn revanche, les contenus sont régulièrement revus sous l'angle de la sobriété éditoriale : si un contenu (offre, article, etc.) est ajouté/modifié, une vue d'ensemble est nécessaire pour contrôler la pertinence des contenus similaires.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 2,
+            "id": "2.8",
+            "priority": "Prioritaire",
+            "difficulty": "Fort",
+            "status": "non-applicable",
+            "comment": "Pas de fournisseurs extérieurs.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 2,
+            "id": "2.9",
+            "priority": "Modéré",
+            "difficulty": "Fort",
+            "status": "conforme",
+            "comment": "Les seuls composants d'interface prêts à l'emploi utilisés sont issus du thème retenu. \nEn tant que tel, ils ont été sélectionnés pour être aussi légers que possible. \nIls sont aussi proches que possible d'un fonctionnement HTML/CSS standard.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 2,
+            "id": "2.10",
+            "priority": "Prioritaire",
+            "difficulty": "Fort",
+            "status": "non-applicable",
+            "comment": "Pas de service-tiers, pas de problème.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 3,
+            "id": "3.1",
+            "priority": "Prioritaire",
+            "difficulty": "Fort",
+            "status": "conforme",
+            "comment": "Jekyll est un générateur de sites statiques, justement sélectionné pour son efficience et sa sobriété.\nhttps://jekyllrb.com/\n\nLes mêmes critères ont orienté le choix du thème.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 3,
+            "id": "3.2",
+            "priority": "Recommandé",
+            "difficulty": "Fort",
+            "status": "conforme",
+            "comment": "Oui, via la logique de SSG (générateur de site statique) de Jekyll.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 3,
+            "id": "3.3",
+            "priority": "Modéré",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Oui, le service numérique coche toutes les cases attendues : \n* HTTP/2\n* HTTPS\n* IPV6",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 3,
+            "id": "3.4",
+            "priority": "Prioritaire",
+            "difficulty": "Moyen",
+            "status": "non-applicable",
+            "comment": "Le service numérique n'est pas commercialisé avec un terminal associé.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 3,
+            "id": "3.5",
+            "priority": "Modéré",
+            "difficulty": "Moyen",
+            "status": "non-applicable",
+            "comment": "Aucune mise à jour évolutive non essentielle n'est proposée. \nPour le reste, c'est un site web \"classique\" dont les briques logicielles évoluent lorsque nécessaire, sans pour autant remettre en cause son fonctionnement.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 3,
+            "id": "3.6",
+            "priority": "Modéré",
+            "difficulty": "Moyen",
+            "status": "non-applicable",
+            "comment": "Le service numérique ne propose pas de mise à jour (site web standard).",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 3,
+            "id": "3.7",
+            "priority": "Modéré",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Un seul environnement : celui de production.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 4,
+            "id": "4.1",
+            "priority": "Prioritaire",
+            "difficulty": "Faible",
+            "status": "conforme",
+            "comment": "Pas d'animation/vidéo/son sur le site.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 4,
+            "id": "4.2",
+            "priority": "Prioritaire",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Aucun défilement infini.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 4,
+            "id": "4.3",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Le site a été pensé pour un accès rapide aux informations. Pour cela, la page d'accueil synthétise la plupart des informations ainsi que l'accès aux principaux contenus. L'arborescence du site est pensée pour que chaque ressource soit accessible en 3 clics au maximum.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 4,
+            "id": "4.4",
+            "priority": "Recommandé",
+            "difficulty": "Faible",
+            "status": "non-applicable",
+            "comment": "Le service ne repose pas sur un service tiers",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 4,
+            "id": "4.5",
+            "priority": "Modéré",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Le thème est pensé pour s'appuyer le plus possible sur des composants natifs (notamment pour des raisons d'accessibilité et de performance).",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 4,
+            "id": "4.6",
+            "priority": "Recommandé",
+            "difficulty": "Faible",
+            "status": "conforme",
+            "comment": "Pas de contenu vidéo/audio/animé.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 4,
+            "id": "4.7",
+            "priority": "Modéré",
+            "difficulty": "Faible",
+            "status": "conforme",
+            "comment": "Le site repose uniquement sur du texte et de l'image. \nL'utilisation d'images n'a lieu qui si absolument nécessaire (à des fins de compréhension du texte).",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 4,
+            "id": "4.8",
+            "priority": "Modéré",
+            "difficulty": "Faible",
+            "status": "conforme",
+            "comment": "Une seule police est utilisée (Playfair). Le seul fichier téléchargé pèse 35.5 ko.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 4,
+            "id": "4.9",
+            "priority": "Modéré",
+            "difficulty": "Faible",
+            "status": "conforme",
+            "comment": "Pas de saisie utilisateur sur le site.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 4,
+            "id": "4.10",
+            "priority": "Modéré",
+            "difficulty": "Faible",
+            "status": "non-applicable",
+            "comment": "Pas de formulaire sur le site.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 4,
+            "id": "4.11",
+            "priority": "Modéré",
+            "difficulty": "Moyen",
+            "status": "non-applicable",
+            "comment": "Pas de formulaire ni d'upload de fichier sur le site.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 4,
+            "id": "4.12",
+            "priority": "Recommandé",
+            "difficulty": "Faible",
+            "status": "conforme",
+            "comment": "Pas de fonctionnalités ayant un impact environnemental significatif.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 4,
+            "id": "4.13",
+            "priority": "Prioritaire",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Pas de notifications.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 4,
+            "id": "4.14",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "L'interface utilisateur ne contient pas de procédé manipulatoire.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 4,
+            "id": "4.15",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Le site se veut sobre par défaut afin justement de s'affranchir de ce type de \"surcouche d'écoconception\".",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 5,
+            "id": "5.1",
+            "priority": "Recommandé",
+            "difficulty": "Faible",
+            "status": "conforme",
+            "comment": "Au moins 75% des images sont en JPEG XL, WEBP ou SVG. \nIl reste quelques reliquats (PNJ et autres) qu'il faudra que je nettoie à l'occasion.",
+            "action_text": "Convertir les images dans formats anciens.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2026-12",
+            "action_easy": true
+        },
+        {
+            "thematic_id": 5,
+            "id": "5.2",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "non-conforme",
+            "comment": "Certaines images, notamment celles qui ne sont pas dans les 75% du critère 5.1 ne sont pas suffisamment compressées.",
+            "action_text": "Refaire une passe sur l'ensemble des images du site. Au-delà de la conversion sur un format optimisé, vérifier le niveau de compression.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2026-12",
+            "action_easy": true
+        },
+        {
+            "thematic_id": 5,
+            "id": "5.3",
+            "priority": "Prioritaire",
+            "difficulty": "Faible",
+            "status": "non-applicable",
+            "comment": "Pas de vidéo sur le site.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 5,
+            "id": "5.4",
+            "priority": "Prioritaire",
+            "difficulty": "Moyen",
+            "status": "non-applicable",
+            "comment": "Pas de vidéo sur le site.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 5,
+            "id": "5.5",
+            "priority": "Prioritaire",
+            "difficulty": "Fort",
+            "status": "non-applicable",
+            "comment": "Pas de vidéo sur le site.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 5,
+            "id": "5.6",
+            "priority": "Modéré",
+            "difficulty": "Faible",
+            "status": "non-applicable",
+            "comment": "Pas de contenu audio sur le site.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 5,
+            "id": "5.7",
+            "priority": "Modéré",
+            "difficulty": "Moyen",
+            "status": "non-conforme",
+            "comment": "Tous les contenus sont à priori au bon format et leur taille maîtrisée mais à vérifier.",
+            "action_text": "Vérifier format et taille des fichiers.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2026-12",
+            "action_easy": true
+        },
+        {
+            "thematic_id": 5,
+            "id": "5.8",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Processus manuel de vérification, à chaque ajout de ressource, de la pertinence des ressources similaires. \nMéthode C.E.R.F.S : Conserver/Elaguer/Réécrire/Fusionner/Supprimer.\n\n+ vérification globale au moins une fois par an.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 6,
+            "id": "6.1",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Le budget environnemental est le suivant : \n* 250 ko maximum par page\n* 30 requêtes maximum par page\n\nIl n'y a pas de cible à atteindre définie car le site est déjà très léger. Ces seuils permettent en revanche de s'assurer que chaque ajout n'est pas trop lourd.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 6,
+            "id": "6.2",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "non-conforme",
+            "comment": "Pas pour l'instant.",
+            "action_text": "Activer le cache sur l'ensemble des ressources qui le permettent, sur une durée aussi longue que possible.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2027-07",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 6,
+            "id": "6.3",
+            "priority": "Modéré",
+            "difficulty": "Faible",
+            "status": "conforme",
+            "comment": "La compression Brotli est bien mise en place côté serveur.",
+            "action_text": "Vérifier si la compression pourrait être étendue à d'autres formats (SVG, etc.).",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2026-12",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 6,
+            "id": "6.4",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "conforme",
+            "comment": "Contrôlé avec MilleCheck : https://millecheck.ai/fr/result/20260715-jfsp0jf/",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 6,
+            "id": "6.5",
+            "priority": "Recommandé",
+            "difficulty": "Fort",
+            "status": "non-conforme",
+            "comment": "Le chargement différé semble ne pas être systématique pour les images.\nIl me faudrait aussi vérifier la stratégie de chargement du code.",
+            "action_text": "Mettre en place le lazy-loading nativement pour les images hors du viewport. \nVérifier le taux de couverture du code.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2027-07",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 6,
+            "id": "6.6",
+            "priority": "Modéré",
+            "difficulty": "Moyen",
+            "status": "non-applicable",
+            "comment": "Le service numérique fonctionne sans l'usage de capteurs des terminaux des utilisateurs",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 6,
+            "id": "6.7",
+            "priority": "Modéré",
+            "difficulty": "Faible",
+            "status": "conforme",
+            "comment": "Les ressources statiques sont bien stockées sur le même domaine, ce qui permet notamment de s'affranchir des cookies.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 7,
+            "id": "7.1",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "non-conforme",
+            "comment": "A vérifier.",
+            "action_text": "Vérifier la mise en place du cache côté serveur.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2027-07",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 7,
+            "id": "7.2",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "non-conforme",
+            "comment": "",
+            "action_text": "Mettre en place une stratégie d'archivage/suppression des données et documents.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2027-07",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 7,
+            "id": "7.3",
+            "priority": "Modéré",
+            "difficulty": "Faible",
+            "status": "non-applicable",
+            "comment": "Le service numérique ne fait pas de traitement en arrière-plan.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 7,
+            "id": "7.4",
+            "priority": "Prioritaire",
+            "difficulty": "Fort",
+            "status": "non-applicable",
+            "comment": "Pas de mécanisme de consensus.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 8,
+            "id": "8.1",
+            "priority": "Prioritaire",
+            "difficulty": "Moyen",
+            "status": "non-conforme",
+            "comment": "Le site est actuellement hébergé chez Netlify : https://www.netlify.com/sustainability/ (initialement pour des raisons budgétaires et pratiques... plutôt des mauvaises raisons au final).",
+            "action_text": "Migrer le site vers un hébergeur européen avec des engagements environnementaux vérifiables.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2027-07",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 8,
+            "id": "8.2",
+            "priority": "Prioritaire",
+            "difficulty": "Moyen",
+            "status": "non-conforme",
+            "comment": "Le site est actuellement hébergé chez Netlify : https://www.netlify.com/sustainability/ (initialement pour des raisons budgétaires et pratiques... plutôt des mauvaises raisons au final).",
+            "action_text": "Migrer le site vers un hébergeur européen avec des engagements environnementaux vérifiables.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2027-07",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 8,
+            "id": "8.3",
+            "priority": "Prioritaire",
+            "difficulty": "Moyen",
+            "status": "non-conforme",
+            "comment": "Le site est actuellement hébergé chez Netlify : https://www.netlify.com/sustainability/ (initialement pour des raisons budgétaires et pratiques... plutôt des mauvaises raisons au final).",
+            "action_text": "Migrer le site vers un hébergeur européen avec des engagements environnementaux vérifiables.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2027-07",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 8,
+            "id": "8.4",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "non-conforme",
+            "comment": "Le site est actuellement hébergé chez Netlify : https://www.netlify.com/sustainability/ (initialement pour des raisons budgétaires et pratiques... plutôt des mauvaises raisons au final).",
+            "action_text": "Migrer le site vers un hébergeur européen avec des engagements environnementaux vérifiables.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2027-07",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 8,
+            "id": "8.5",
+            "priority": "Recommandé",
+            "difficulty": "Faible",
+            "status": "non-conforme",
+            "comment": "Le site est actuellement hébergé chez Netlify : https://www.netlify.com/sustainability/ (initialement pour des raisons budgétaires et pratiques... plutôt des mauvaises raisons au final).",
+            "action_text": "Migrer le site vers un hébergeur européen avec des engagements environnementaux vérifiables.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2027-07",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 8,
+            "id": "8.6",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "non-conforme",
+            "comment": "Le site est actuellement hébergé chez Netlify : https://www.netlify.com/sustainability/ (initialement pour des raisons budgétaires et pratiques... plutôt des mauvaises raisons au final).",
+            "action_text": "Migrer le site vers un hébergeur européen avec des engagements environnementaux vérifiables.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2027-07",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 8,
+            "id": "8.7",
+            "priority": "Recommandé",
+            "difficulty": "Fort",
+            "status": "non-conforme",
+            "comment": "Le site est actuellement hébergé chez Netlify : https://www.netlify.com/sustainability/ (initialement pour des raisons budgétaires et pratiques... plutôt des mauvaises raisons au final).",
+            "action_text": "Migrer le site vers un hébergeur européen avec des engagements environnementaux vérifiables.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2027-07",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 8,
+            "id": "8.8",
+            "priority": "Modéré",
+            "difficulty": "Fort",
+            "status": "non-applicable",
+            "comment": "Le service numérique repose sur l'hébergement de moins de l'équivalent de 10 To de données",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 8,
+            "id": "8.9",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "non-conforme",
+            "comment": "Pas de transparence sur ce sujet donc non conforme par défaut.",
+            "action_text": "A voir en fonction du futur nouvel hébergeur.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2027-07",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 8,
+            "id": "8.10",
+            "priority": "Recommandé",
+            "difficulty": "Fort",
+            "status": "non-conforme",
+            "comment": "Manque de transparence sur le sujet donc non-conforme par défaut.",
+            "action_text": "A voir en fonction du futur nouvel hébergeur.",
+            "action_who": [
+                "LDS"
+            ],
+            "action_when": "2027-07",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 9,
+            "id": "9.1",
+            "priority": "Prioritaire",
+            "difficulty": "Fort",
+            "status": "conforme",
+            "comment": "Le service numérique ne repose pas sur des algorithmes d'intelligence artificielle ou d'apprentissage automatique.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 9,
+            "id": "9.2",
+            "priority": "Prioritaire",
+            "difficulty": "Moyen",
+            "status": "non-applicable",
+            "comment": "Le service numérique ne repose pas sur des algorithmes d'intelligence artificielle ou d'apprentissage automatique.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 9,
+            "id": "9.3",
+            "priority": "Prioritaire",
+            "difficulty": "Fort",
+            "status": "non-applicable",
+            "comment": "Le service numérique ne repose pas sur des algorithmes d'intelligence artificielle ou d'apprentissage automatique.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 9,
+            "id": "9.4",
+            "priority": "Prioritaire",
+            "difficulty": "Faible",
+            "status": "non-applicable",
+            "comment": "Le service numérique ne repose pas sur des algorithmes d'intelligence artificielle ou d'apprentissage automatique.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 9,
+            "id": "9.5",
+            "priority": "Prioritaire",
+            "difficulty": "Faible",
+            "status": "non-applicable",
+            "comment": "Le service numérique ne repose pas sur des algorithmes d'intelligence artificielle ou d'apprentissage automatique.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 9,
+            "id": "9.6",
+            "priority": "Recommandé",
+            "difficulty": "Moyen",
+            "status": "non-applicable",
+            "comment": "Le service numérique ne repose pas sur des algorithmes d'intelligence artificielle ou d'apprentissage automatique.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        },
+        {
+            "thematic_id": 9,
+            "id": "9.7",
+            "priority": "Prioritaire",
+            "difficulty": "Faible",
+            "status": "non-applicable",
+            "comment": "Le service numérique ne repose pas sur des algorithmes d'intelligence artificielle ou d'apprentissage automatique.",
+            "action_text": "",
+            "action_who": [],
+            "action_when": "",
+            "action_easy": false
+        }
+    ]
+}
