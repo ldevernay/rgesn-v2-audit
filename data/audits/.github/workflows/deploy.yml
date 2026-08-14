@@ -1,0 +1,45 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configurer la clé SSH et déployer via rsync
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        VPS_USER: ${{ secrets.SSH_VPS_USER }}
+        VPS_HOST: ${{ secrets.SSH_VPS_IP }}
+        VPS_PORT: ${{ secrets.SSH_VPS_PORT }}
+        VPS_PATH: /var/www/outil/
+      run: |
+        # 1. Créer le dossier SSH et écrire la clé privée
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+        # 2. Ajouter l'hôte connu pour éviter la demande de confirmation interactive
+        # On utilise -p pour le port personnalisé
+        ssh-keyscan -H -p "$VPS_PORT" "$VPS_HOST" >> ~/.ssh/known_hosts
+
+        # 3. Lancer rsync avec suppression (--delete)
+        # -a: archive mode (conserve les permissions, dates, etc.)
+        # -v: verbose
+        # -z: compress
+        # --delete: supprime les fichiers sur le VPS qui n'existent plus localement
+        cd dist
+        rsync -avz --delete \
+          -e "ssh -p $VPS_PORT -o StrictHostKeyChecking=no" \
+          ./ \
+          "$VPS_USER@$VPS_HOST:$VPS_PATH"
