@@ -42,3 +42,4 @@ jobs:
           -e "ssh -p $VPS_PORT -o StrictHostKeyChecking=no" \
           ./ \
           "$VPS_USER@$VPS_HOST:$VPS_PATH"
+        sudo chown -R www-data:www-data /var/www/outil/

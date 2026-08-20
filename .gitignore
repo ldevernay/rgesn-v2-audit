@@ -1,0 +1,12 @@
+# Audits data
+data/audits
+
+# Temporary files
+tmp
+.DS_Store
+Desktop.ini
+._*
+Thumbs.db
+.Spotlight-V100
+.Trashes
+.idea
