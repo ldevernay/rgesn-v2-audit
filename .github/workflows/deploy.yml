@@ -43,4 +43,3 @@ jobs:
           ./ \
           "$VPS_USER@$VPS_HOST:$VPS_PATH"
           
-        sudo chown -R www-data:www-data /var/www/outil/
