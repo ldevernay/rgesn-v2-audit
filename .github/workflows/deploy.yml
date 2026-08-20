@@ -38,7 +38,7 @@ jobs:
         # -v: verbose
         # -z: compress
         # --delete: supprime les fichiers sur le VPS qui n'existent plus localement
-        rsync -avz --delete \
+        rsync -avz --no-times --no-perms --delete \
           -e "ssh -p $VPS_PORT -o StrictHostKeyChecking=no" \
           ./ \
           "$VPS_USER@$VPS_HOST:$VPS_PATH"
