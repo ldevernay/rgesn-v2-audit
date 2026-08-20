@@ -33,10 +33,6 @@ jobs:
         # On utilise -p pour le port personnalisé
         ssh-keyscan -H -p "$VPS_PORT" "$VPS_HOST" >> ~/.ssh/known_hosts
 
-        ssh -p $VPS_PORT $VPS_USER@$VPS_HOST
-        sudo chown -R ubuntu:ubuntu /var/www/outil
-        exit
-
         # 3. Lancer rsync avec suppression (--delete)
         # -a: archive mode (conserve les permissions, dates, etc.)
         # -v: verbose
@@ -47,6 +43,3 @@ jobs:
           ./ \
           "$VPS_USER@$VPS_HOST:$VPS_PATH"
           
-        ssh -p $VPS_PORT $VPS_USER@$VPS_HOST
-        sudo chown -R www-data:www-data /var/www/outil
-        exit
