@@ -1,6 +1,7 @@
 # Audits data
 data/audits
 data/security
+data/users.json
 
 # Temporary files
 tmp
