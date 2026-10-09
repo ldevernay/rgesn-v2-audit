@@ -233,7 +233,7 @@ $show_owner_col = $current_user !== null && is_admin($current_user);
 <!-- Pied de page avec Version -->
 <footer class="text-center py-3">
     <span class="text-muted small">Outil d'audit RGESN V2 2024</span>
-    <a href="release-notes.php" class="text-muted small" aria-label="Notes de version pour la Version 1.5">Version 1.5</a>
+    <a href="release-notes.php" class="text-muted small" aria-label="Notes de version pour la Version 1.6">Version 1.6</a>
     <span class="text-muted small">développé par Grégory Biondo sous</span>
     <a href="https://www.gnu.org/licenses/agpl-3.0.txt" class="text-muted small" target="_blank">licence Open Source GNU AGPL v3</a>
     <span class="text-muted small"> - </span>
