@@ -902,6 +902,10 @@ body.report-show-actions .report-actions-block { display: block; }
     width: 100%;
     min-width: 1320px;
 }
+/* Admin : colonne "Propriétaire" supplémentaire (150px dans le colgroup). */
+.audits-table-with-owner {
+    min-width: 1470px; /* 1320 + 150 */
+}
 .caption-sr-only {
     position: static;
     width: 1px;

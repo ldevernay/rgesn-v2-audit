@@ -22,6 +22,21 @@
 
 $versions = [
     [
+        'version' => '1.6',
+        'date'    => 'Octobre 2026',
+        'label'   => 'Authentification',
+        'sections' => [
+            [
+                'title' => 'Gestion des utilisateurs',
+                'items' => [
+                    'Ajout des écrans et fonctionnalités de connexion',
+                    'Définition du propriétaire des audits et de leur visibilité pour les autres utilisateurs',
+                    'La création des utilisateurs est directement prise en charge par un admin'
+                ],
+            ]
+        ],
+    ],
+    [
         'version' => '1.5',
         'date'    => 'Juillet 2026',
         'label'   => 'Accessibilité RGAA 4.1.2',
@@ -212,8 +227,8 @@ $versions = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notes de version — Outil d'audit RGESN V2 2024</title>
     <?php include __DIR__ . '/includes/favicon.php'; ?>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="bg-light">
@@ -278,6 +293,6 @@ $versions = [
     <a href="https://github.com/GregoryBiondo/rgesn-v2-audit" class="text-muted small" target="_blank">Code source (AGPL v3)</a>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

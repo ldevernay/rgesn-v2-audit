@@ -1,0 +1,12 @@
+# Bloque tout accès direct à ces fichiers via HTTP (Apache 2.4+ et 2.2).
+# Ce dossier contient des données sensibles (hash de mots de passe, contenu
+# des audits) qui ne doivent JAMAIS être servies directement : elles doivent
+# uniquement passer par api.php, qui applique les contrôles de permission.
+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+</IfModule>

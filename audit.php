@@ -21,6 +21,12 @@
  */
 
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/audit_store.php';
+
+// Un audit public en lecture seule est consultable sans connexion. On ne
+// force la page de login que si l'utilisateur n'a vraiment aucun accès.
+$current_user = current_user(); // nullable : visiteur non connecté possible
 
 // ── Chargement des données ────────────────────────────────────────────────────
 $audit_id = trim($_GET['id'] ?? '');
@@ -41,6 +47,46 @@ if (!is_array($audit)) {
     header('Location: index.php');
     exit;
 }
+
+// ── Contrôle d'accès ──────────────────────────────────────────────────────────
+$permission = get_user_permission($audit, $current_user);
+if (!permission_can_view($permission)) {
+    if ($current_user === null) {
+        // Pas connecté et pas d'accès public : se connecter pourrait débloquer
+        // un accès nominatif (partage direct), donc on propose la connexion.
+        $redirect = urlencode($_SERVER['REQUEST_URI'] ?? '');
+        header('Location: login.php?redirect=' . $redirect);
+        exit;
+    }
+    // Connecté mais aucun accès, même après vérification : on ne révèle même
+    // pas que cet audit existe.
+    header('Location: index.php');
+    exit;
+}
+$permission_readonly = !permission_can_edit($permission); // lecture seule pour raison de PERMISSION
+$can_manage          = permission_can_manage($permission); // gérer les contributeurs / la visibilité / le propriétaire / supprimer
+$visibility          = $audit['visibility'] ?? 'contributors';
+
+// ── Verrou sémantique d'édition ───────────────────────────────────────────────
+// Si la permission autorise déjà l'édition, on tente d'acquérir le verrou dès
+// le chargement de la page (comme pour user_form.php). S'il est détenu par
+// quelqu'un d'autre, la page s'affiche en lecture seule avec une bannière
+// explicite — indépendamment de la permission, qui elle resterait "owner" ou
+// "contributor".
+$lock_readonly = false;
+$lock_info     = null;
+
+if (!$permission_readonly && $current_user !== null) {
+    $lock_result = acquire_audit_lock($audit_id, $current_user);
+    if (!$lock_result['success']) {
+        $lock_readonly = true;
+        $lock_info     = $lock_result['status'];
+    } else {
+        $audit = read_audit($audit_id) ?? $audit; // locked_at vient de changer, on relit pour cohérence
+    }
+}
+
+$is_readonly = $permission_readonly || $lock_readonly;
 
 // Charger le référentiel des critères
 $ref_criteria = [];
@@ -118,10 +164,11 @@ function difficulty_badge(string $d): string {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?= esc(csrf_token()) ?>">
     <title>Audit — <?= esc($audit['project']['name']) ?> — RGESN V2</title>
     <?php include __DIR__ . '/includes/favicon.php'; ?>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="audit-page">
@@ -134,20 +181,63 @@ function difficulty_badge(string $d): string {
             <span class="header-title">Audit RGESN</span>
             <span class="badge bg-indigo ms-1">V2 2024</span>
             <span class="visually-hidden">Retour à l'accueil</span>
+            <?php if ($visibility === 'public'): ?>
+                <span class="badge bg-success ms-1" title="Visible par tout le monde, y compris sans connexion">
+                    <i class="bi bi-globe me-1" aria-hidden="true"></i>Public
+                </span>
+            <?php elseif ($visibility === 'authenticated'): ?>
+                <span class="badge bg-info text-dark ms-1" title="Visible en lecture par tout utilisateur connecté">
+                    <i class="bi bi-people me-1" aria-hidden="true"></i>Visible par tous
+                </span>
+            <?php endif; ?>
         </a>
         <div class="d-flex align-items-center gap-2">
+            <?php if ($can_manage): ?>
+                <button type="button" class="btn btn-outline-indigo btn-sm" data-bs-toggle="modal" data-bs-target="#modalManageAudit">
+                    <i class="bi bi-people me-1" aria-hidden="true"></i>Gérer les accès
+                </button>
+            <?php endif; ?>
             <?php if ($is_done): ?>
                 <a href="report.php?id=<?= esc($audit_id) ?>" class="btn btn-outline-indigo btn-sm" target="_blank" rel="noopener">
-                    <i class="bi bi-file-earmark-bar-graph me-1"></i>Voir le rapport public
+                    <i class="bi bi-file-earmark-bar-graph me-1" aria-hidden="true"></i>Voir le rapport public
                 </a>
             <?php else: ?>
                 <button class="btn btn-outline-secondary btn-sm" disabled title="Disponible une fois l'audit terminé">
-                    <i class="bi bi-file-earmark-bar-graph me-1"></i>Voir le rapport public
+                    <i class="bi bi-file-earmark-bar-graph me-1" aria-hidden="true"></i>Voir le rapport public
                 </button>
+            <?php endif; ?>
+            <?php if ($current_user !== null): ?>
+                <a href="account.php" class="btn btn-outline-secondary btn-sm" title="Mon compte" aria-label="Mon compte">
+                    <i class="bi bi-person" aria-hidden="true"></i>
+                </a>
+                <span class="text-muted small ms-2 d-none d-md-inline"><?= esc($current_user['name']) ?></span>
+                <a href="logout.php" class="btn btn-outline-secondary btn-sm" title="Se déconnecter" aria-label="Se déconnecter">
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                </a>
+            <?php else: ?>
+                <a href="login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI'] ?? '') ?>" class="btn btn-outline-indigo btn-sm ms-2">
+                    <i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>Se connecter
+                </a>
             <?php endif; ?>
         </div>
     </div>
 </header>
+<?php if ($lock_readonly): ?>
+<div class="alert alert-warning rounded-0 mb-0 py-2 text-center small">
+    <i class="bi bi-lock me-1" aria-hidden="true"></i>
+    Cet audit est actuellement en cours de modification par <strong><?= esc($lock_info['by_name'] ?? '?') ?></strong>.
+    Vous êtes en lecture seule le temps qu'il/elle termine (ou après quelques minutes d'inactivité de sa part).
+</div>
+<?php elseif ($permission_readonly): ?>
+<div class="alert alert-secondary rounded-0 mb-0 py-2 text-center small">
+    <i class="bi bi-eye me-1" aria-hidden="true"></i>
+    <?php if ($current_user === null): ?>
+        Vous consultez cet audit public en lecture seule. <a href="login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI'] ?? '') ?>">Connectez-vous</a> pour le dupliquer ou en créer un nouveau.
+    <?php else: ?>
+        Vous consultez cet audit en lecture seule. Vous pouvez le dupliquer mais pas le modifier.
+    <?php endif; ?>
+</div>
+<?php endif; ?>
 
 <main>
 
@@ -587,6 +677,10 @@ function difficulty_badge(string $d): string {
 
 </main>
 
+<footer class="text-center py-3">
+    <a href="legal.php" class="text-muted small">Mentions légales & confidentialité</a>
+</footer>
+
 <!-- Modal : Modifier les informations de l'audit -->
 <div class="modal fade" id="modalEditAudit" tabindex="-1" aria-labelledby="modalEditAuditLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -632,6 +726,74 @@ function difficulty_badge(string $d): string {
     </div>
 </div>
 
+<?php if ($can_manage): ?>
+<!-- Modal : Gérer les accès (visibilité, contributeurs, propriétaire) -->
+<div class="modal fade" id="modalManageAudit" tabindex="-1" aria-labelledby="modalManageAuditLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title h5 fw-bold" id="modalManageAuditLabel">
+                    <i class="bi bi-people text-indigo me-2"></i>Gérer les accès
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body pt-3">
+
+                <div class="mb-3">
+                    <label for="visibilitySelect" class="form-label fw-medium">Qui peut consulter cet audit ?</label>
+                    <select class="form-select" id="visibilitySelect">
+                        <option value="contributors" <?= $visibility === 'contributors' ? 'selected' : '' ?>>Uniquement le propriétaire et les contributeurs</option>
+                        <option value="authenticated" <?= $visibility === 'authenticated' ? 'selected' : '' ?>>Tous les utilisateurs connectés (lecture seule)</option>
+                        <option value="public" <?= $visibility === 'public' ? 'selected' : '' ?>>Tout le monde, y compris sans connexion (lecture seule)</option>
+                    </select>
+                    <div class="form-text">La visibilité donne un accès en LECTURE uniquement. Éditer exige d'être contributeur.</div>
+                </div>
+                <div id="visibilityError" class="alert alert-danger d-none py-2 small" role="alert"></div>
+
+                <hr>
+
+                <div class="mb-3">
+                    <label for="contributorUserSelect" class="form-label fw-medium">Ajouter un contributeur</label>
+                    <div class="d-flex gap-2">
+                        <select class="form-select" id="contributorUserSelect">
+                            <option value="">Chargement des utilisateurs…</option>
+                        </select>
+                        <button type="button" class="btn btn-indigo text-nowrap" id="btnAddContributor" aria-label="Ajouter cette personne comme contributeur">
+                            <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="form-text">Un contributeur peut consulter ET modifier l'audit.</div>
+                </div>
+                <div id="contributorFormError" class="alert alert-danger d-none py-2 small" role="alert"></div>
+                <h3 class="h6 fw-semibold">Contributeurs</h3>
+                <ul class="list-group mb-3" id="contributorList">
+                    <li class="list-group-item text-muted small">Chargement…</li>
+                </ul>
+
+                <hr>
+
+                <div class="mb-2">
+                    <label for="transferOwnerSelect" class="form-label fw-medium">Céder la propriété</label>
+                    <div class="d-flex gap-2">
+                        <select class="form-select" id="transferOwnerSelect">
+                            <option value="">Chargement des utilisateurs…</option>
+                        </select>
+                        <button type="button" class="btn btn-outline-danger text-nowrap" id="btnTransferOwner">
+                            Céder
+                        </button>
+                    </div>
+                    <div class="form-text">Vous deviendrez automatiquement contributeur (vous ne perdez pas l'accès), mais ne pourrez plus gérer les accès ni supprimer l'audit.</div>
+                </div>
+                <div id="transferOwnerError" class="alert alert-danger d-none py-2 small" role="alert"></div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- Bouton retour en haut -->
 <button id="backToTop" class="back-to-top" aria-label="Retour en haut de la page" title="Retour en haut">
     <i class="bi bi-chevron-up"></i>
@@ -642,9 +804,16 @@ function difficulty_badge(string $d): string {
 const AUDIT_ID = <?= json_encode($audit_id) ?>;
 const AUDIT_STATUS = <?= json_encode($audit['status']) ?>;
 const TOTAL_CRITERIA = <?= count($audit['criteria']) ?>;
+const AUDIT_PERMISSION = <?= json_encode($permission) ?>; // 'owner' | 'contributor' | 'lecture'
+const IS_READONLY = <?= json_encode($is_readonly) ?>;
+const HOLDS_EDIT_LOCK = <?= json_encode(!$permission_readonly && !$lock_readonly) ?>; // verrou acquis par CE visiteur
+const CAN_MANAGE = <?= json_encode($can_manage) ?>;
+const CURRENT_USER_ID = <?= json_encode($current_user['id'] ?? null) ?>;
+const AUDIT_CONTRIBUTORS = <?= json_encode($audit['contributors'] ?? []) ?>;
+const AUDIT_OWNER_ID = <?= json_encode($audit['owner_id'] ?? null) ?>;
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/app.js"></script>
 <script src="assets/js/audit.js"></script>
 <script>
@@ -696,6 +865,243 @@ const TOTAL_CRITERIA = <?= count($audit['criteria']) ?>;
     document.getElementById('modalEditAudit').addEventListener('hidden.bs.modal', () => {
         document.getElementById('formEditAudit').classList.remove('was-validated');
         document.getElementById('editFormError').classList.add('d-none');
+    });
+})();
+</script>
+
+<!-- Mode lecture seule -->
+<script>
+(function () {
+    'use strict';
+
+    /* La sécurité réelle est côté serveur (update_audit refuse déjà toute
+     * modification sans droit d'édition, ou si quelqu'un d'autre détient le
+     * verrou). Ici, on désactive simplement les contrôles pour éviter de
+     * proposer une action qui échouerait de toute façon. */
+    if (IS_READONLY) {
+        document.querySelectorAll(
+            '.criterion-card input, .criterion-card textarea, .criterion-card select, .criterion-card button'
+        ).forEach(el => {
+            if (el.type === 'radio' || el.type === 'checkbox') {
+                el.disabled = true;
+            } else if (el.tagName === 'BUTTON') {
+                el.disabled = true;
+            } else {
+                el.readOnly = true;
+            }
+        });
+
+        // Le bouton "Modifier l'audit" (pencil) et "Terminer l'audit" n'ont pas de sens en lecture seule.
+        document.querySelectorAll(
+            '[data-bs-target="#modalEditAudit"], #btnFinishAudit, #btnFinishAuditBottom'
+        ).forEach(el => el.remove());
+    }
+})();
+</script>
+
+<!-- Verrou sémantique : heartbeat + libération à la fermeture de l'onglet -->
+<?php if (!$permission_readonly && !$lock_readonly): ?>
+<script>
+(function () {
+    'use strict';
+    const RENEW_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes (verrou valide 10 min)
+
+    setInterval(() => {
+        apiRequest('POST', 'api.php?action=renew_audit_lock', { id: AUDIT_ID }).catch(() => {});
+    }, RENEW_INTERVAL_MS);
+
+    window.addEventListener('pagehide', () => {
+        // sendBeacon ne permet pas d'en-tête personnalisé : le jeton CSRF
+        // passe dans le corps de la requête (x-www-form-urlencoded, pas
+        // JSON — api.php retombe sur $_POST quand le corps n'est pas un
+        // JSON valide, et require_csrf_api() accepte $_POST['csrf_token']
+        // en complément de l'en-tête X-CSRF-Token pour ce cas précis).
+        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        const token = csrfMeta ? csrfMeta.content : '';
+        const data = new Blob(
+            [`id=${encodeURIComponent(AUDIT_ID)}&csrf_token=${encodeURIComponent(token)}`],
+            { type: 'application/x-www-form-urlencoded' }
+        );
+        navigator.sendBeacon('api.php?action=release_audit_lock', data);
+    });
+})();
+</script>
+<?php endif; ?>
+
+<!-- Gestion des accès : visibilité, contributeurs, transfert de propriété -->
+<script>
+(function () {
+    'use strict';
+
+    if (!CAN_MANAGE) {
+        return;
+    }
+
+    const manageModalEl    = document.getElementById('modalManageAudit');
+    const contributorSelect = document.getElementById('contributorUserSelect');
+    const btnAddContributor = document.getElementById('btnAddContributor');
+    const contributorList   = document.getElementById('contributorList');
+    const contributorError  = document.getElementById('contributorFormError');
+    const visibilitySelect  = document.getElementById('visibilitySelect');
+    const visibilityError   = document.getElementById('visibilityError');
+    const transferSelect    = document.getElementById('transferOwnerSelect');
+    const btnTransferOwner  = document.getElementById('btnTransferOwner');
+    const transferError     = document.getElementById('transferOwnerError');
+
+    let allUsers      = [];   // [{id, name}], sans l'utilisateur courant
+    let contributors  = AUDIT_CONTRIBUTORS.slice(); // copie locale, tenue à jour après chaque appel API
+
+    function usersById() {
+        const map = {};
+        allUsers.forEach(u => { map[u.id] = u.name; });
+        return map;
+    }
+
+    function renderContributorList() {
+        const names = usersById();
+
+        if (contributors.length === 0) {
+            contributorList.innerHTML = '<li class="list-group-item text-muted small">Aucun contributeur pour l\'instant.</li>';
+            return;
+        }
+
+        contributorList.innerHTML = contributors.map(id => {
+            const name = names[id] || 'Utilisateur inconnu';
+            return `
+                <li class="list-group-item d-flex align-items-center justify-content-between" data-user-id="${id}">
+                    <span>${escHtml(name)}</span>
+                    <button type="button" class="btn btn-sm btn-outline-danger btn-remove-contributor" data-user-id="${id}" title="Retirer" aria-label="Retirer ${escHtml(name)} des contributeurs">
+                        <i class="bi bi-x-lg" aria-hidden="true"></i>
+                    </button>
+                </li>`;
+        }).join('');
+
+        contributorList.querySelectorAll('.btn-remove-contributor').forEach(btn => {
+            btn.addEventListener('click', () => removeContributor(btn.dataset.userId));
+        });
+    }
+
+    function renderSelects() {
+        const contributorIds = new Set(contributors);
+        const availableForContributor = allUsers.filter(u => !contributorIds.has(u.id));
+
+        contributorSelect.innerHTML = availableForContributor.length > 0
+            ? availableForContributor.map(u => `<option value="${u.id}">${escHtml(u.name)}</option>`).join('')
+            : '<option value="">Tout le monde est déjà contributeur</option>';
+        btnAddContributor.disabled = availableForContributor.length === 0;
+
+        // On peut céder la propriété à n'importe qui d'autre (contributeur ou non).
+        transferSelect.innerHTML = allUsers.length > 0
+            ? allUsers.map(u => `<option value="${u.id}">${escHtml(u.name)}</option>`).join('')
+            : '<option value="">Aucun autre utilisateur</option>';
+        btnTransferOwner.disabled = allUsers.length === 0;
+    }
+
+    async function loadUsers() {
+        try {
+            allUsers = await apiRequest('GET', 'api.php?action=list_users_basic');
+        } catch (err) {
+            allUsers = [];
+        }
+        renderSelects();
+        renderContributorList();
+    }
+
+    async function addContributor() {
+        const userId = contributorSelect.value;
+        contributorError.classList.add('d-none');
+        if (!userId) {
+            return;
+        }
+
+        btnAddContributor.disabled = true;
+        try {
+            const result = await apiRequest('POST', 'api.php?action=add_contributor', {
+                id: AUDIT_ID, user_id: userId,
+            });
+            contributors = result.contributors || contributors;
+            renderSelects();
+            renderContributorList();
+        } catch (err) {
+            contributorError.textContent = err.message || 'Impossible d\'ajouter ce contributeur.';
+            contributorError.classList.remove('d-none');
+        } finally {
+            btnAddContributor.disabled = false;
+        }
+    }
+
+    async function removeContributor(userId) {
+        try {
+            const result = await apiRequest('POST', 'api.php?action=remove_contributor', {
+                id: AUDIT_ID, user_id: userId,
+            });
+            contributors = result.contributors || contributors.filter(id => id !== userId);
+            renderSelects();
+            renderContributorList();
+        } catch (err) {
+            contributorError.textContent = err.message || 'Impossible de retirer ce contributeur.';
+            contributorError.classList.remove('d-none');
+        }
+    }
+
+    btnAddContributor.addEventListener('click', addContributor);
+
+    /* ── Visibilité ──────────────────────────────────────────────────────── */
+    let previousVisibility = visibilitySelect.value;
+
+    visibilitySelect.addEventListener('change', async (e) => {
+        const desired = e.target.value;
+        visibilityError.classList.add('d-none');
+        visibilitySelect.disabled = true;
+        try {
+            await apiRequest('POST', 'api.php?action=set_visibility', {
+                id: AUDIT_ID, visibility: desired,
+            });
+            previousVisibility = desired;
+        } catch (err) {
+            e.target.value = previousVisibility; // on annule le changement visuel en cas d'échec
+            visibilityError.textContent = err.message || 'Impossible de changer la visibilité.';
+            visibilityError.classList.remove('d-none');
+        } finally {
+            visibilitySelect.disabled = false;
+        }
+    });
+
+    /* ── Transfert de propriété ──────────────────────────────────────────── */
+    btnTransferOwner.addEventListener('click', async () => {
+        const newOwnerId = transferSelect.value;
+        transferError.classList.add('d-none');
+        if (!newOwnerId) {
+            return;
+        }
+
+        const name = (usersById())[newOwnerId] || 'cette personne';
+        if (!confirm(`Céder la propriété de cet audit à ${name} ? Vous deviendrez contributeur et ne pourrez plus gérer les accès ni le supprimer.`)) {
+            return;
+        }
+
+        btnTransferOwner.disabled = true;
+        try {
+            await apiRequest('POST', 'api.php?action=transfer_owner', {
+                id: AUDIT_ID, new_owner_id: newOwnerId,
+            });
+            // La propriété a changé : on recharge pour refléter les nouveaux droits.
+            window.location.reload();
+        } catch (err) {
+            transferError.textContent = err.message || 'Impossible de céder la propriété.';
+            transferError.classList.remove('d-none');
+            btnTransferOwner.disabled = false;
+        }
+    });
+
+    // On charge la liste des utilisateurs seulement à l'ouverture de la modale
+    // (évite un appel API inutile si le propriétaire ne clique jamais sur "Gérer les accès").
+    let usersLoaded = false;
+    manageModalEl.addEventListener('show.bs.modal', () => {
+        if (!usersLoaded) {
+            usersLoaded = true;
+            loadUsers();
+        }
     });
 })();
 </script>

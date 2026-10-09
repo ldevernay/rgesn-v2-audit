@@ -19,16 +19,27 @@
 /**
  * RGESN V2 2024 Audit Tool — Dashboard
  */
+
+require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/auth.php';
+
+$current_user = current_user(); // nullable : la liste des audits publics est visible sans connexion
+
+// Colonne "Propriétaire" (+ son filtre et son <col>) : admins uniquement. Une seule
+// variable pour que <colgroup>, en-têtes et filtres ne puissent plus se désynchroniser
+// (table-layout: fixed → un seul décalage casse tout l'affichage).
+$show_owner_col = $current_user !== null && is_admin($current_user);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?= esc(csrf_token()) ?>">
     <title>Outil d'audit RGESN V2 2024</title>
     <?php include __DIR__ . '/includes/favicon.php'; ?>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="bg-light">
@@ -42,14 +53,42 @@
             <span class="badge bg-indigo ms-1">V2 2024</span>
             <span class="visually-hidden">Retour à l'accueil</span>
         </a>
-        <button class="btn btn-indigo" data-bs-toggle="modal" data-bs-target="#modalNewAudit">
-            <i class="bi bi-plus-lg me-1"></i> Nouvel audit
-        </button>
+        <div class="d-flex align-items-center gap-2">
+            <?php if ($current_user !== null): ?>
+                <button class="btn btn-indigo" data-bs-toggle="modal" data-bs-target="#modalNewAudit">
+                    <i class="bi bi-plus-lg me-1"></i> Nouvel audit
+                </button>
+                <?php if (is_admin($current_user)): ?>
+                    <a href="users.php" class="btn btn-outline-secondary btn-sm" title="Gérer les utilisateurs" aria-label="Gérer les utilisateurs">
+                        <i class="bi bi-people" aria-hidden="true"></i>
+                    </a>
+                <?php endif; ?>
+                <a href="account.php" class="btn btn-outline-secondary btn-sm" title="Mon compte" aria-label="Mon compte">
+                    <i class="bi bi-person" aria-hidden="true"></i>
+                </a>
+                <span class="text-muted small ms-2 d-none d-md-inline"><?= esc($current_user['name']) ?></span>
+                <a href="logout.php" class="btn btn-outline-secondary btn-sm" title="Se déconnecter" aria-label="Se déconnecter">
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                </a>
+            <?php else: ?>
+                <span class="text-muted small d-none d-md-inline">Vous consultez les audits publics</span>
+                <a href="login.php" class="btn btn-indigo">
+                    <i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>Se connecter
+                </a>
+            <?php endif; ?>
+        </div>
     </div>
 </header>
 
 <!-- Main -->
 <main class="container-fluid px-4 py-4" style="max-width:1400px;margin:0 auto;">
+
+    <?php if ($current_user === null): ?>
+    <div class="alert alert-info d-flex align-items-center gap-2 mb-4">
+        <i class="bi bi-info-circle fs-5" aria-hidden="true"></i>
+        <div>Seuls les audits rendus publics par leur propriétaire sont visibles ici. <a href="login.php">Connectez-vous</a> pour voir vos propres audits, en créer, ou en dupliquer.</div>
+    </div>
+    <?php endif; ?>
 
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
@@ -88,10 +127,11 @@
     <div id="auditsTableWrapper" class="d-none">
         <div class="card border-0 shadow-sm">
             <div class="table-responsive">
-                <table id="auditsTable" class="table table-hover align-middle mb-0 audits-table" tabindex="-1">
+                <table id="auditsTable" class="table table-hover align-middle mb-0 audits-table<?= $show_owner_col ? ' audits-table-with-owner' : '' ?>" tabindex="-1">
                     <caption class="caption-sr-only">Liste des audits RGESN, triable par colonne. Une ligne de filtres est disponible sous les en-têtes pour affiner l'affichage par colonne ; la dernière colonne regroupe les actions disponibles pour chaque audit (continuer, rapport, dupliquer, supprimer).</caption>
                     <colgroup>
                         <col style="width:260px;">
+                        <?php if ($show_owner_col): ?><col style="width:150px;"><?php endif; ?>
                         <col style="width:140px;">
                         <col style="width:100px;">
                         <col style="width:130px;">
@@ -103,6 +143,9 @@
                     <thead class="table-light">
                         <tr>
                             <th class="ps-4 sortable" scope="col" data-sort="project" aria-sort="none"><button type="button" class="sort-btn">Projet <i class="bi bi-caret-down sort-icon"></i></button></th>
+                            <?php if ($show_owner_col): ?>
+                            <th scope="col">Propriétaire</th>
+                            <?php endif; ?>
                             <th class="sortable" scope="col" data-sort="auditor" aria-sort="none"><button type="button" class="sort-btn">Auditeur <i class="bi bi-caret-down sort-icon"></i></button></th>
                             <th class="sortable" scope="col" data-sort="created_at" aria-sort="none"><button type="button" class="sort-btn">Création <i class="bi bi-caret-down sort-icon"></i></button></th>
                             <th class="sortable" scope="col" data-sort="updated_at" aria-sort="none"><button type="button" class="sort-btn">Mise à jour <i class="bi bi-caret-down sort-icon"></i></button></th>
@@ -115,6 +158,11 @@
                             <th class="ps-4" scope="col">
                                 <input type="text" class="form-control form-control-sm filter-input" data-filter="project" placeholder="Filtrer…" aria-label="Projet : Filtrer">
                             </th>
+                            <?php if ($show_owner_col): ?>
+                            <th scope="col">
+                                <input type="text" class="form-control form-control-sm filter-input" data-filter="owner" placeholder="Filtrer…" aria-label="Propriétaire : Filtrer">
+                            </th>
+                            <?php endif; ?>
                             <th scope="col">
                                 <input type="text" class="form-control form-control-sm filter-input" data-filter="auditor" placeholder="Filtrer…" aria-label="Auditeur : Filtrer">
                             </th>
@@ -181,6 +229,10 @@
     </div>
 
 </main>
+
+<footer class="text-center py-3">
+    <a href="legal.php" class="text-muted small">Mentions légales & confidentialité</a>
+</footer>
 
 <!-- Pied de page avec Version -->
 <footer class="text-center py-3">
@@ -378,9 +430,11 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/app.js"></script>
 <script>
+const IS_LOGGED_IN = <?= json_encode($current_user !== null) ?>;
+const IS_ADMIN = <?= json_encode($current_user !== null && is_admin($current_user)) ?>;
 (function () {
     'use strict';
 
@@ -391,7 +445,7 @@
     let currentPage = 1;
     const PAGE_SIZE = 20;
     const filters = {
-        project: '', auditor: '', status: '',
+        project: '', owner: '', auditor: '', status: '',
         created_at: { start: '', end: '' },
         updated_at: { start: '', end: '' },
         score:      { min: 0, max: 100 },
@@ -444,6 +498,7 @@
     function getFilteredSortedAudits() {
         let list = allAudits.filter(a => {
             if (filters.project && !normalizeForSearch(a.project.name).includes(normalizeForSearch(filters.project))) return false;
+            if (filters.owner && !normalizeForSearch(a.owner_name || '').includes(normalizeForSearch(filters.owner))) return false;
             if (filters.auditor && !normalizeForSearch(a.auditor.name).includes(normalizeForSearch(filters.auditor))) return false;
             if (!isDateInRange(a.created_at, filters.created_at)) return false;
             if (!isDateInRange(a.updated_at, filters.updated_at)) return false;
@@ -513,7 +568,7 @@
 
         tbody.innerHTML = '';
         if (pageItems.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Aucun audit ne correspond aux filtres.</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="${IS_ADMIN ? 9 : 8}" class="text-center text-muted py-4">Aucun audit ne correspond aux filtres.</td></tr>`;
         } else {
             pageItems.forEach(a => tbody.appendChild(createAuditRow(a)));
         }
@@ -625,6 +680,7 @@
     document.getElementById('btnResetFilters').addEventListener('click', () => {
         document.querySelectorAll('.filter-input').forEach(input => { input.value = ''; });
         filters.project = '';
+        filters.owner = '';
         filters.auditor = '';
         filters.status = '';
         filters.created_at = { start: '', end: '' };
@@ -872,6 +928,52 @@
 
         const completion = a.completion ?? 0;
 
+        const permission = a.permission || 'owner';
+        const visibility = a.visibility || 'contributors';
+        const lock = a.lock || { locked: false };
+
+        const visibilityBadge = visibility === 'public'
+            ? '<span class="badge bg-success ms-1" title="Visible par tout le monde, y compris sans connexion"><i class="bi bi-globe me-1"></i>Public</span>'
+            : visibility === 'authenticated'
+                ? '<span class="badge bg-info text-dark ms-1" title="Visible en lecture par tout utilisateur connecté"><i class="bi bi-people me-1"></i>Visible par tous</span>'
+                : '';
+
+        const roleBadge = !IS_LOGGED_IN
+            ? ''
+            : (permission === 'owner'
+                ? ''
+                : permission === 'contributor'
+                    ? '<span class="badge bg-secondary ms-1" title="Vous êtes contributeur de cet audit"><i class="bi bi-pencil me-1"></i>Contributeur</span>'
+                    : '<span class="badge bg-secondary ms-1" title="Accès en lecture seule"><i class="bi bi-eye me-1"></i>Lecture seule</span>');
+
+        const lockBadge = lock.locked
+            ? `<span class="badge bg-warning text-dark ms-1" title="En cours de modification par ${escHtml(lock.by_name || '?')}"><i class="bi bi-lock me-1"></i>Verrouillé</span>`
+            : '';
+
+        const permissionBadge = visibilityBadge + roleBadge + lockBadge;
+
+        const isReadonly = permission === 'lecture';
+        const openLabel  = isReadonly ? 'Consulter' : (a.status === 'terminé' ? 'Modifier' : 'Continuer');
+        const openIcon   = isReadonly ? 'bi-eye' : 'bi-pencil-square';
+
+        const deleteBtn = (IS_LOGGED_IN && permission === 'owner')
+            ? `<button class="btn btn-sm btn-outline-danger btn-delete" data-id="${a.id}" data-name="${escHtml(a.project.name)}" title="Supprimer" aria-label="Supprimer l'audit ${escHtml(a.project.name)}">
+                    <i class="bi bi-trash3" aria-hidden="true"></i>
+               </button>`
+            : '';
+
+        const duplicateBtn = IS_LOGGED_IN
+            ? `<button class="btn btn-sm btn-outline-secondary btn-duplicate"
+                        data-id="${a.id}"
+                        data-name="${escHtml(a.project.name)}"
+                        data-url="${escHtml(a.project.url || '')}"
+                        data-auditor="${escHtml(a.auditor.name || '')}"
+                        title="Dupliquer"
+                        aria-label="Dupliquer l'audit ${escHtml(a.project.name)}">
+                    <i class="bi bi-copy" aria-hidden="true"></i>
+               </button>`
+            : '';
+
         const reportBtn = a.status === 'terminé'
             ? `<a href="report.php?id=${a.id}" class="btn btn-sm btn-outline-indigo" title="Voir le rapport" aria-label="Voir le rapport de l'audit ${escHtml(a.project.name)}" target="_blank" rel="noopener">
                     <i class="bi bi-file-earmark-bar-graph"></i> Rapport
@@ -880,11 +982,16 @@
                     <i class="bi bi-file-earmark-bar-graph"></i> Rapport
                </button>`;
 
+        const ownerCell = IS_ADMIN
+            ? `<td class="text-muted small">${escHtml(a.owner_name || '—')}${a.contributor_count > 0 ? ` <span class="text-muted">(+${a.contributor_count})</span>` : ''}</td>`
+            : '';
+
         tr.innerHTML = `
             <td class="ps-4">
-                <div class="fw-semibold text-truncate" style="max-width:240px;" title="${escHtml(a.project.name)}">${escHtml(a.project.name)}</div>
+                <div class="fw-semibold text-truncate d-flex align-items-center" style="max-width:280px;" title="${escHtml(a.project.name)}">${escHtml(a.project.name)}${permissionBadge}</div>
                 ${a.project.url ? `<a href="${escHtml(a.project.url)}" target="_blank" rel="noopener" class="text-muted small text-truncate d-block" style="max-width:240px;" title="${escHtml(a.project.url)}">${escHtml(a.project.url)}</a>` : ''}
             </td>
+            ${ownerCell}
             <td class="text-muted small">${escHtml(a.auditor.name || '—')}</td>
             <td class="text-muted small">${formatDate(a.created_at)}</td>
             <td class="text-muted small">${formatDate(a.updated_at)}</td>
@@ -900,21 +1007,12 @@
             </td>
             <td class="text-end pe-4 text-nowrap">
                 <div class="d-flex justify-content-end gap-1 flex-nowrap">
-                    <a href="audit.php?id=${a.id}" class="btn btn-sm btn-indigo" aria-label="${a.status === 'terminé' ? 'Modifier' : 'Continuer'} l'audit ${escHtml(a.project.name)}">
-                        <i class="bi bi-pencil-square me-1"></i>${a.status === 'terminé' ? 'Modifier' : 'Continuer'}
+                    <a href="audit.php?id=${a.id}" class="btn btn-sm btn-indigo" aria-label="${openLabel} l'audit ${escHtml(a.project.name)}">
+                        <i class="bi ${openIcon} me-1"></i>${openLabel}
                     </a>
                     ${reportBtn}
-                    <button class="btn btn-sm btn-outline-secondary btn-duplicate"
-                            data-id="${a.id}"
-                            data-name="${escHtml(a.project.name)}"
-                            data-url="${escHtml(a.project.url || '')}"
-                            data-auditor="${escHtml(a.auditor.name || '')}"
-                            title="Dupliquer">
-                        <i class="bi bi-copy"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger btn-delete" data-id="${a.id}" data-name="${escHtml(a.project.name)}" title="Supprimer">
-                        <i class="bi bi-trash3"></i>
-                    </button>
+                    ${duplicateBtn}
+                    ${deleteBtn}
                 </div>
             </td>
         `;

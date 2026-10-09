@@ -36,6 +36,13 @@ async function apiRequest(method, url, body = null) {
         headers: { 'Accept': 'application/json' },
     };
 
+    if (method === 'POST') {
+        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        if (csrfMeta) {
+            options.headers['X-CSRF-Token'] = csrfMeta.content;
+        }
+    }
+
     if (body !== null && method === 'POST') {
         options.headers['Content-Type'] = 'application/json';
         options.body = JSON.stringify(body);

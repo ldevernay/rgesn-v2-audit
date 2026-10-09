@@ -77,3 +77,60 @@ Dupliquer un audit crée un nouvel audit indépendant :
 - `created_at` et `updated_at` sont réinitialisées à la date de la duplication (elles ne reprennent pas celles de l'audit source).
 - Le statut repart à « En cours », même si l'audit source était « Terminé ».
 - Tous les critères (statuts, commentaires, actions) sont copiés tels quels depuis l'audit source, et le score est recalculé à partir de cette copie.
+
+## Icônes Bootstrap Icons (sous-ensemble allégé)
+
+Pour des raisons d'écoconception, `assets/vendor/bootstrap-icons/` ne contient
+**pas** le jeu complet de Bootstrap Icons (~2050 icônes, ~300 Ko de police),
+mais un sous-ensemble généré ne contenant que les icônes réellement utilisées
+dans le code (52 icônes au moment de la rédaction, ~10 Ko de police).
+
+**Si vous ajoutez une nouvelle icône** (`bi-xxx`) dans un fichier `.php` ou
+`.js`, son glyphe sera absent de cette police allégée et rien ne s'affichera.
+Il faut alors régénérer le sous-ensemble :
+
+```bash
+npm install --no-save bootstrap-icons@1.11.3   # récupère la police complète, dans node_modules
+bash bin/rebuild-icon-subset.sh ./node_modules/bootstrap-icons
+```
+
+Le script détecte automatiquement toutes les classes `bi-xxx` utilisées dans
+le projet, et régénère `assets/vendor/bootstrap-icons/bootstrap-icons.min.css`
+ainsi que les fichiers de police correspondants. Vérifiez visuellement les
+pages avant de committer.
+
+Prérequis : `pip install fonttools brotli` (outils de développement, pas des
+dépendances de l'application).
+
+## CSS Bootstrap purgé
+
+Même logique que pour les icônes : `assets/vendor/bootstrap/css/bootstrap.min.css`
+ne contient que les règles CSS correspondant aux classes Bootstrap réellement
+utilisées dans le projet (via [PurgeCSS](https://purgecss.com/)), et non le
+fichier complet. Poids réduit d'environ 233 Ko à 64 Ko.
+
+**Si le rendu d'une page casse après l'ajout d'une nouvelle classe Bootstrap**
+(un nouveau composant, un nouvel utilitaire jamais utilisé jusque-là), c'est
+probablement que sa règle a été purgée parce qu'elle n'existait encore nulle
+part dans le code au moment de la purge. Il faut alors régénérer le fichier :
+
+```bash
+npm install --no-save bootstrap@5.3.3 purgecss@6   # dans un dossier de travail temporaire
+npx purgecss \
+  --css ./node_modules/bootstrap/dist/css/bootstrap.min.css \
+  --content "**/*.php" "assets/js/**/*.js" "assets/vendor/bootstrap/js/bootstrap.bundle.min.js" \
+  --safelist "show" "showing" "fade" "collapsing" "collapse" "modal-open" "modal-static" \
+  --output ./purged/
+```
+
+Le bundle JS de Bootstrap (`bootstrap.bundle.min.js`) est volontairement inclus
+comme source de contenu à analyser : il injecte lui-même des classes à
+l'exécution (`show`, `fade`, `modal-backdrop`, `collapsing`...) qui ne
+figurent jamais dans notre propre code, seulement comme littéraux de chaîne
+à l'intérieur de ce fichier. Sans cela, ces classes seraient supprimées à
+tort et les animations/transitions des modales et des menus déroulants
+casseraient silencieusement.
+
+⚠️ Après toute régénération, vérifiez visuellement les pages (modales,
+tableaux, formulaires) avant de committer — aucun outil ne garantit à 100 %
+qu'une classe dynamique n'a pas été ratée par l'analyse statique.

@@ -42,6 +42,70 @@ function is_valid_uuid(string $uuid): bool
     );
 }
 
+// ── Génération d'un UUID v4 (audits, utilisateurs) ────────────────────────────
+function generate_uuid(): string
+{
+    $data = random_bytes(16);
+    $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // version 4
+    $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // variant
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+}
+
+// ── Mutex de fichier (flock) ───────────────────────────────────────────────────
+//
+// Protège tout cycle lire → modifier → écrire sur un fichier JSON partagé
+// (data/users.json, un audit donné) contre les écritures concurrentes : sans
+// ça, deux requêtes qui lisent le même fichier "en même temps" peuvent
+// chacune écrire leur propre version modifiée, et l'une écrase silencieusement
+// le travail de l'autre (perte de mise à jour), même si chaque écriture prise
+// isolément est atomique (fichier temporaire + rename()).
+//
+// $path est verrouillé via un fichier compagnon "<path>.lock" : le verrou
+// existe indépendamment du fichier de données lui-même (qui peut ne pas
+// encore exister au premier appel), et n'est jamais lui-même écrasé par
+// l'écriture atomique (rename()) du fichier de données.
+//
+// $callback reçoit le contenu actuel du fichier (chaîne, '' si le fichier
+// n'existe pas encore) et doit renvoyer un tuple [$toWrite, $result] :
+//   - $toWrite : chaîne à écrire dans le fichier, ou null pour ne rien écrire
+//     (callback en lecture seule, ou abandon après vérification d'une
+//     condition — par ex. "le verrou sémantique est déjà pris par un autre").
+//   - $result : valeur renvoyée telle quelle par with_file_lock() à l'appelant
+//     (ex : le tableau de données décodé, un booléen de succès...).
+function with_file_lock(string $path, callable $callback): mixed
+{
+    $lockPath = $path . '.lock';
+    $dir = dirname($path);
+    if (!is_dir($dir)) {
+        mkdir($dir, 0755, true);
+    }
+
+    $handle = fopen($lockPath, 'c');
+    if ($handle === false) {
+        throw new RuntimeException("Impossible d'ouvrir le fichier de verrou : {$lockPath}");
+    }
+
+    try {
+        if (!flock($handle, LOCK_EX)) {
+            throw new RuntimeException("Impossible d'acquérir le verrou : {$lockPath}");
+        }
+
+        $current = file_exists($path) ? file_get_contents($path) : '';
+        [$toWrite, $result] = $callback($current);
+
+        if ($toWrite !== null) {
+            $tmp = $path . '.tmp';
+            file_put_contents($tmp, $toWrite, LOCK_EX);
+            rename($tmp, $path);
+        }
+
+        return $result;
+    } finally {
+        flock($handle, LOCK_UN);
+        fclose($handle);
+    }
+}
+
 // ── Échappement HTML ──────────────────────────────────────────────────────────
 function esc(string $s): string {
     return htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');

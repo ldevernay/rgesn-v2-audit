@@ -309,8 +309,8 @@ $markdown_content_with_actions = generate_markdown($audit, $ref_criteria, $by_th
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rapport RGESN — <?= esc($audit['project']['name']) ?></title>
     <?php include __DIR__ . '/includes/favicon.php'; ?>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="report-page bg-white">
@@ -737,7 +737,7 @@ $markdown_content_with_actions = generate_markdown($audit, $ref_criteria, $by_th
     </p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/app.js"></script>
 <script>
 let actionsVisible = false;
