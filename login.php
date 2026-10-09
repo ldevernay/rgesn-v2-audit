@@ -37,7 +37,7 @@ if ($redirect === '' || str_starts_with($redirect, '//') || preg_match('#^https?
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $login    = trim($_POST['login'] ?? '');
+    $login = trim($_POST['login'] ?? '');
     $password = (string) ($_POST['password'] ?? '');
 
     if (!verify_csrf_token($_POST['csrf_token'] ?? null)) {
@@ -77,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -86,49 +87,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
+
 <body class="bg-light">
 
-<div class="d-flex align-items-center justify-content-center" style="min-height:100vh;">
-    <div class="card shadow-sm" style="max-width:400px;width:100%;">
-        <div class="card-body p-4">
-            <div class="text-center mb-4">
-                <img src="assets/images/logo.svg" alt="" height="40" class="mb-2">
-                <h1 class="h5 fw-bold mb-0">Outil d'audit RGESN</h1>
-                <p class="text-muted small">Connexion requise</p>
-            </div>
-
-            <?php if ($error !== ''): ?>
-                <div class="alert alert-danger py-2 small" role="alert"><?= esc($error) ?></div>
-            <?php endif; ?>
-
-            <form method="post" action="login.php" novalidate>
-                <input type="hidden" name="redirect" value="<?= esc($redirect) ?>">
-                <input type="hidden" name="csrf_token" value="<?= esc(csrf_token()) ?>">
-
-                <div class="mb-3">
-                    <label for="login" class="form-label small fw-semibold">Identifiant</label>
-                    <input type="text" class="form-control" id="login" name="login" required autofocus autocomplete="username">
+    <div class="d-flex align-items-center justify-content-center" style="min-height:100vh;">
+        <div class="card shadow-sm" style="max-width:400px;width:100%;">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <img src="assets/images/logo.svg" alt="" height="40" class="mb-2">
+                    <h1 class="h5 fw-bold mb-0">Outil d'audit RGESN</h1>
+                    <p class="text-muted small">Connexion requise</p>
                 </div>
 
-                <div class="mb-3">
-                    <label for="password" class="form-label small fw-semibold">Mot de passe</label>
-                    <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password">
-                </div>
+                <?php if ($error !== ''): ?>
+                    <div class="alert alert-danger py-2 small" role="alert"><?= esc($error) ?></div>
+                <?php endif; ?>
 
-                <button type="submit" class="btn btn-indigo w-100">Se connecter</button>
-            <div class="text-center mb-4">
-                <img src="assets/images/logo.svg" alt="" height="40" class="mb-2">
-                <h1 class="h5 fw-bold mb-0">Outil d'audit RGESN</h1>
-                <p class="text-muted small">Connexion requise</p>
+                <form method="post" action="login.php" novalidate>
+                    <input type="hidden" name="redirect" value="<?= esc($redirect) ?>">
+                    <input type="hidden" name="csrf_token" value="<?= esc(csrf_token()) ?>">
+
+                    <div class="mb-3">
+                        <label for="login" class="form-label small fw-semibold">Identifiant</label>
+                        <input type="text" class="form-control" id="login" name="login" required autofocus
+                            autocomplete="username">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label small fw-semibold">Mot de passe</label>
+                        <input type="password" class="form-control" id="password" name="password" required
+                            autocomplete="current-password">
+                    </div>
+
+                    <button type="submit" class="btn btn-indigo w-100">Se connecter</button>
+                    <div class="text-center mb-4">
+                        <p class="text-muted small">Pas de compte ? Contactez-moi ! </p>
+                    </div>
+                </form>
             </div>
-            </form>
         </div>
     </div>
-</div>
 
-<footer class="text-center py-3">
-    <a href="legal.php" class="text-muted small">Mentions légales & confidentialité</a>
-</footer>
+    <footer class="text-center py-3">
+        <a href="legal.php" class="text-muted small">Mentions légales & confidentialité</a>
+    </footer>
 
 </body>
+
 </html>

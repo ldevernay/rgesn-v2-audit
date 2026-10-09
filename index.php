@@ -116,11 +116,7 @@ $show_owner_col = $current_user !== null && is_admin($current_user);
         <div class="mb-3">
             <i class="bi bi-clipboard2-check text-muted" style="font-size:3rem;"></i>
         </div>
-        <h2 class="h5 fw-semibold">Aucun audit pour l'instant</h2>
-        <p class="text-muted">Créez votre premier audit pour commencer à évaluer un service numérique.</p>
-        <button class="btn btn-indigo" data-bs-toggle="modal" data-bs-target="#modalNewAudit">
-            <i class="bi bi-plus-lg me-1"></i> Créer un audit
-        </button>
+        <h2 class="h5 fw-semibold">Aucun audit public pour l'instant</h2>
     </div>
 
     <!-- Tableau des audits -->
