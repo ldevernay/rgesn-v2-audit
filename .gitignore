@@ -1,6 +1,6 @@
 # Audits data
 data/audits
-
+data/security
 # Temporary files
 tmp
 .DS_Store
