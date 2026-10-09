@@ -1,5 +1,7 @@
 # Audits data
 data/audits
+
+# Security data
 data/security
 data/users.json
 
