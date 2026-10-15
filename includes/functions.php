@@ -112,6 +112,23 @@ function esc(string $s): string {
 }
 
 // ── Texte brut vers HTML (paragraphes + listes à puces "- ") ─────────────────
+// ── Compatibilité minimaliste mbstring (hôtes sans extension mbstring) ───────
+if (!function_exists('mb_strtolower')) {
+    function mb_strtolower(string $str, ?string $encoding = null): string
+    {
+        return strtolower($str);
+    }
+}
+if (!function_exists('mb_substr')) {
+    function mb_substr(string $str, int $start, ?int $length = null, ?string $encoding = null): string
+    {
+        if ($length === null) {
+            return substr($str, $start);
+        }
+        return substr($str, $start, $length);
+    }
+}
+
 function nl2p(string $text): string {
     $text = esc($text);
     $html = '';

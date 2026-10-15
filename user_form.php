@@ -143,7 +143,7 @@ $page_title = $is_edit ? 'Modifier un utilisateur' : 'Créer un utilisateur';
     <?php if ($readonly): ?>
         <div class="alert alert-warning">
             <i class="bi bi-lock me-1" aria-hidden="true"></i>
-            Cet utilisateur est actuellement en cours de modification. Vous ne pouvez le consulter qu'en lecture seule pour l'instant.
+            Cet utilisateur est actuellement en cours de modification par <strong><?= esc($lock_info['by_name'] ?? '?') ?></strong>. Vous ne pouvez le consulter qu'en lecture seule pour l'instant.
         </div>
     <?php endif; ?>
 
