@@ -719,11 +719,11 @@ function difficulty_badge(string $d): string {
 
                 <div class="mb-2">
                     <label for="importXlsxFile" class="form-label fw-medium">
-                        <i class="bi bi-file-earmark-spreadsheet me-1"></i>Importer depuis un fichier Excel (XLSX)
+                        <i class="bi bi-file-earmark-spreadsheet me-1"></i>Importer depuis un fichier tableur (XLSX/ODS)
                     </label>
                     <input type="file" class="form-control" id="importXlsxFile"
-                           accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-                    <div class="form-text">Remplace les informations du projet, de l'auditeur·ice et les critères par les données du tableau Excel.</div>
+                           accept=".xlsx,.ods,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.oasis.opendocument.spreadsheet">
+                    <div class="form-text">Remplace les informations du projet, de l'auditeur·ice et les critères par les données du tableau (Excel ou LibreOffice).</div>
                     <button type="button" class="btn btn-outline-secondary mt-2" id="btnImportXlsx">
                         <span class="spinner-border spinner-border-sm me-1 d-none" id="importXlsxSpinner"></span>
                         Importer le fichier
@@ -890,7 +890,7 @@ const AUDIT_OWNER_ID = <?= json_encode($audit['owner_id'] ?? null) ?>;
 
         if (!fileInput.files || !fileInput.files.length) {
             statusDiv.classList.add('text-danger');
-            statusDiv.textContent = 'Veuillez sélectionner un fichier XLSX.';
+            statusDiv.textContent = 'Veuillez sélectionner un fichier XLSX ou ODS.';
             return;
         }
 
