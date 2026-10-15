@@ -86,7 +86,20 @@ function xlsx_parse_sheet(string $xml, array $shared): array
 
 function xlsx_read_workbook(string $path): array
 {
-    $base = 'phar://' . $path;
+    // Décompression pure PHP (sans ZipArchive, sans exec, sans phar://) :
+    // le format ZIP est simple à parser et zlib (gzinflate) est toujours
+    // disponible. C'est la solution la plus portable pour un hébergement
+    // mutualisé.
+    $extractDir = sys_get_temp_dir() . '/rgesn_xlsx_' . uniqid('', true);
+    @mkdir($extractDir, 0777, true);
+    try {
+        xlsx_unzip_to_dir($path, $extractDir);
+    } catch (Throwable $e) {
+        xlsx_rrmdir($extractDir);
+        throw $e;
+    }
+
+    $base = $extractDir;
 
     $relsXml = @file_get_contents($base . '/xl/_rels/workbook.xml.rels');
     $relMap  = [];
@@ -131,7 +144,90 @@ function xlsx_read_workbook(string $path): array
         $sheets[$name] = xlsx_parse_sheet($content, $shared);
     }
 
+    xlsx_rrmdir($base);
+
     return $sheets;
+}
+
+function xlsx_unzip_to_dir(string $path, string $dest): void
+{
+    $data = @file_get_contents($path);
+    if ($data === false) {
+        throw new RuntimeException('Fichier XLSX illisible.');
+    }
+    $eocdSig = "\x50\x4b\x05\x06";
+    $pos = strrpos($data, $eocdSig);
+    if ($pos === false) {
+        throw new RuntimeException('Archive ZIP invalide (EOCD introuvable).');
+    }
+    $cdSize   = unpack('V', substr($data, $pos + 12, 4))[1];
+    $cdOffset = unpack('V', substr($data, $pos + 16, 4))[1];
+
+    $ptr = $cdOffset;
+    $end = $cdOffset + $cdSize;
+    while ($ptr < $end) {
+        if (substr($data, $ptr, 4) !== "PK\x01\x02") {
+            break;
+        }
+        $compMethod   = unpack('v', substr($data, $ptr + 10, 2))[1];
+        $compSize     = unpack('V', substr($data, $ptr + 20, 4))[1];
+        $fnLen        = unpack('v', substr($data, $ptr + 28, 2))[1];
+        $extraLen     = unpack('v', substr($data, $ptr + 30, 2))[1];
+        $commentLen   = unpack('v', substr($data, $ptr + 32, 2))[1];
+        $localOffset  = unpack('V', substr($data, $ptr + 42, 4))[1];
+        $filename     = substr($data, $ptr + 46, $fnLen);
+
+        $lp = $localOffset;
+        if (substr($data, $lp, 4) !== "PK\x03\x04") {
+            throw new RuntimeException('En-tête local ZIP invalide.');
+        }
+        $localFnLen    = unpack('v', substr($data, $lp + 26, 2))[1];
+        $localExtraLen = unpack('v', substr($data, $lp + 28, 2))[1];
+        $dataOffset    = $lp + 30 + $localFnLen + $localExtraLen;
+        $compData      = substr($data, $dataOffset, $compSize);
+
+        if ($compMethod === 0) {
+            $uncomp = $compData;
+        } elseif ($compMethod === 8) {
+            $uncomp = @gzinflate($compData);
+            if ($uncomp === false) {
+                throw new RuntimeException('Décompression ZIP (deflate) échouée pour ' . $filename);
+            }
+        } else {
+            throw new RuntimeException('Méthode de compression ZIP non supportée (' . $compMethod . ')');
+        }
+
+        $target = $dest . '/' . $filename;
+        if (substr($filename, -1) === '/') {
+            @mkdir($target, 0777, true);
+        } else {
+            @mkdir(dirname($target), 0777, true);
+            if (file_put_contents($target, $uncomp) === false) {
+                throw new RuntimeException('Écriture impossible : ' . $target);
+            }
+        }
+
+        $ptr += 46 + $fnLen + $extraLen + $commentLen;
+    }
+}
+
+function xlsx_rrmdir(string $dir): void
+{
+    if (!is_dir($dir)) {
+        return;
+    }
+    $it = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST
+    );
+    foreach ($it as $file) {
+        if ($file->isDir()) {
+            @rmdir($file->getRealPath());
+        } else {
+            @unlink($file->getRealPath());
+        }
+    }
+    @rmdir($dir);
 }
 
 function rgesn_import_xlsx(array $audit, string $path): array
