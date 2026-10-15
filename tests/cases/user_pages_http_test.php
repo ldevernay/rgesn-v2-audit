@@ -28,8 +28,8 @@ if (!file_exists($fixtureRoot . '/api.php')) {
 
 // ─── Fixtures : deux admins, un auditeur ─────────────────────────────────────
 
-$adminPassword    = 'admin-password-123';
-$auditeurPassword = 'auditeur-password-123';
+$adminPassword    = 'Admin-Password-123!';
+$auditeurPassword = 'Auditeur-Password-123!';
 
 $adminId1  = 'http-admin-1';
 $adminId2  = 'http-admin-2';
@@ -174,7 +174,7 @@ try {
 
     // Sans jeton CSRF : refusé
     $r = http_request('POST', "{$base}/user_form.php", $admin1Cookies, [
-        'login' => 'nouveluser', 'name' => 'Nouvel Utilisateur', 'role' => 'auditeur', 'password' => 'motdepasse123',
+        'login' => 'nouveluser', 'name' => 'Nouvel Utilisateur', 'role' => 'auditeur', 'password' => 'Aa1!Aa1!Aa1!Aa1!',
     ]);
     T::assertFalse(
         str_contains($r['headers']['location'] ?? '', 'flash=created'),
@@ -184,7 +184,7 @@ try {
     // Avec le bon jeton : accepté
     $r = http_request('POST', "{$base}/user_form.php", $admin1Cookies, [
         'login' => 'nouveluser', 'name' => 'Nouvel Utilisateur', 'role' => 'auditeur',
-        'password' => 'motdepasse123', 'csrf_token' => $csrfToken,
+        'password' => 'Aa1!Aa1!Aa1!Aa1!', 'csrf_token' => $csrfToken,
     ]);
     T::assertTrue(
         str_contains($r['headers']['location'] ?? '', 'flash=created'),
@@ -328,16 +328,16 @@ try {
 
     $r = http_request('POST', "{$base}/account.php", $auditeurCookies2, [
         'current_password' => 'mauvais-mot-de-passe',
-        'new_password' => 'nouveaumotdepasse123',
-        'confirm_password' => 'nouveaumotdepasse123',
+        'new_password' => 'Aa1!Aa1!Aa1!Aa1!Aa',
+        'confirm_password' => 'Aa1!Aa1!Aa1!Aa1!Aa',
         'csrf_token' => $accountCsrf,
     ]);
     T::assertTrue(str_contains($r['body'], 'incorrect'), 'Un mauvais mot de passe actuel est rejeté avec un message clair');
 
     $r = http_request('POST', "{$base}/account.php", $auditeurCookies2, [
         'current_password' => $auditeurPassword,
-        'new_password' => 'nouveaumotdepasse123',
-        'confirm_password' => 'nouveaumotdepasse123',
+        'new_password' => 'Aa1!Aa1!Aa1!Aa1!Aa',
+        'confirm_password' => 'Aa1!Aa1!Aa1!Aa1!Aa',
         'csrf_token' => $accountCsrf,
     ]);
     T::assertTrue(str_contains($r['body'], 'succès'), 'Le changement de mot de passe personnel réussit avec le bon mot de passe actuel');
@@ -345,7 +345,7 @@ try {
     $updatedUsers = json_decode(file_get_contents($fixtureRoot . '/data/users.json'), true);
     $auditeurEntry = current(array_filter($updatedUsers, fn($u) => $u['id'] === $auditeurId));
     T::assertTrue(
-        password_verify('nouveaumotdepasse123', $auditeurEntry['password_hash']),
+        password_verify('Aa1!Aa1!Aa1!Aa1!Aa', $auditeurEntry['password_hash']),
         'Le nouveau mot de passe est bien celui appliqué en base'
     );
 

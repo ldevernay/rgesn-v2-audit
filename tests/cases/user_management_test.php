@@ -59,25 +59,25 @@ reset_fixture([
     ['id' => 'u1', 'login' => 'existant', 'name' => 'Existant', 'role' => 'auditeur', 'password_hash' => password_hash('x', PASSWORD_DEFAULT)],
 ]);
 
-$r = create_user_record('nouveau', 'Nouveau Compte', 'auditeur', 'motdepasse123');
+$r = create_user_record('nouveau', 'Nouveau Compte', 'auditeur', 'Aa1!Aa1!Aa1!Aa1!');
 T::assertTrue($r['success'], 'Création avec des données valides réussit');
 T::assertSame('nouveau', $r['user']['login'] ?? null, 'Le login est bien enregistré');
 T::assertTrue(
-    password_verify('motdepasse123', $r['user']['password_hash'] ?? ''),
+    password_verify('Aa1!Aa1!Aa1!Aa1!', $r['user']['password_hash'] ?? ''),
     'Le mot de passe est bien haché et vérifiable'
 );
 T::assertTrue(array_key_exists('locked_by', $r['user']) && $r['user']['locked_by'] === null, 'Un nouvel utilisateur démarre sans verrou');
 
-$r = create_user_record('existant', 'Doublon', 'auditeur', 'motdepasse123');
+$r = create_user_record('existant', 'Doublon', 'auditeur', 'Aa1!Aa1!Aa1!Aa1!');
 T::assertFalse($r['success'], 'Création avec un login déjà utilisé échoue');
 
-$r = create_user_record('', 'Sans login', 'auditeur', 'motdepasse123');
+$r = create_user_record('', 'Sans login', 'auditeur', 'Aa1!Aa1!Aa1!Aa1!');
 T::assertFalse($r['success'], 'Un login vide est rejeté');
 
 $r = create_user_record('court', 'Mdp court', 'auditeur', '1234');
 T::assertFalse($r['success'], 'Un mot de passe de moins de 8 caractères est rejeté');
 
-$r = create_user_record('mauvais-role', 'Test', 'superadmin', 'motdepasse123');
+$r = create_user_record('mauvais-role', 'Test', 'superadmin', 'Aa1!Aa1!Aa1!Aa1!');
 T::assertFalse($r['success'], 'Un rôle invalide est rejeté');
 
 $after = json_decode(file_get_contents(USERS_FILE), true);
@@ -122,10 +122,10 @@ reset_fixture([$admin1, $auditeur1]); // un seul admin, acteur différent du cib
 $r = update_user_record('admin-1', ['role' => 'auditeur'], $auditeur1);
 T::assertFalse($r['success'], 'Impossible de rétrograder le DERNIER admin, même par quelqu\'un d\'autre');
 
-$r = update_user_record('aud-1', ['password' => 'nouveaumotdepasse'], $admin1);
+$r = update_user_record('aud-1', ['password' => 'Aa1!Aa1!Aa1!Aa1!N'], $admin1);
 T::assertTrue($r['success'], 'Changer le mot de passe d\'un utilisateur réussit');
 T::assertTrue(
-    password_verify('nouveaumotdepasse', find_user_by_id('aud-1')['password_hash']),
+    password_verify('Aa1!Aa1!Aa1!Aa1!N', find_user_by_id('aud-1')['password_hash']),
     'Le nouveau mot de passe est bien appliqué'
 );
 
@@ -162,17 +162,17 @@ reset_fixture([
 ]);
 $self = ['id' => 'u-self', 'login' => 'self', 'name' => 'Self', 'role' => 'auditeur'];
 
-$r = change_own_password($self, 'mauvais-mot-de-passe', 'nouveaumotdepasse123');
+$r = change_own_password($self, 'mauvais-mot-de-passe', 'Aa1!Aa1!Aa1!Aa1!N');
 T::assertFalse($r['success'], 'Un mauvais mot de passe actuel est rejeté');
 
-$r = change_own_password($self, $plainPassword, 'nouveaumotdepasse123');
+$r = change_own_password($self, $plainPassword, 'Aa1!Aa1!Aa1!Aa1!N');
 T::assertTrue($r['success'], 'Changer son propre mot de passe avec le bon mot de passe actuel réussit');
 T::assertTrue(
-    password_verify('nouveaumotdepasse123', find_user_by_id('u-self')['password_hash']),
+    password_verify('Aa1!Aa1!Aa1!Aa1!N', find_user_by_id('u-self')['password_hash']),
     'Le nouveau mot de passe est bien appliqué'
 );
 
-$r = change_own_password($self, 'nouveaumotdepasse123', 'x');
+$r = change_own_password($self, 'Aa1!Aa1!Aa1!Aa1!N', 'x');
 T::assertFalse($r['success'], 'Un nouveau mot de passe trop court est rejeté');
 
 // ═════════════════════════════════════════════════════════════════════════

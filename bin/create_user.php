@@ -33,6 +33,7 @@ if (php_sapi_name() !== 'cli') {
 }
 
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/auth.php';
 // On charge uniquement les fonctions de données utilisateurs, sans démarrer
 // de session (inutile en CLI et session_start() y échouerait de toute façon).
 if (!defined('USERS_FILE')) {
@@ -110,8 +111,8 @@ while (!in_array($role, ['admin', 'auditeur'], true)) {
 $password = prompt_password('Mot de passe : ');
 $password_confirm = prompt_password('Confirmer le mot de passe : ');
 
-if (strlen($password) < 8) {
-    fwrite(STDERR, "Erreur : le mot de passe doit faire au moins 8 caractères.\n");
+if (!password_is_strong($password)) {
+    fwrite(STDERR, "Erreur : " . password_policy_error() . "\n");
     exit(1);
 }
 if ($password !== $password_confirm) {

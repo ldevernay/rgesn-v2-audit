@@ -114,13 +114,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="mb-3">
                     <label for="new_password" class="form-label fw-medium">Nouveau mot de passe</label>
-                    <input type="password" class="form-control" id="new_password" name="new_password" required minlength="8" autocomplete="new-password">
+                    <input type="password" class="form-control" id="new_password" name="new_password" required minlength="16" autocomplete="new-password"
+                           pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{16,}"
+                           title="Au moins 16 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.">
                     <div class="form-text">8 caractères minimum.</div>
                 </div>
 
                 <div class="mb-4">
                     <label for="confirm_password" class="form-label fw-medium">Confirmer le nouveau mot de passe</label>
-                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required minlength="8" autocomplete="new-password">
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required minlength="16" autocomplete="new-password">
                 </div>
 
                 <button type="submit" class="btn btn-indigo w-100">Mettre à jour</button>

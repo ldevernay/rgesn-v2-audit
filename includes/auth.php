@@ -282,6 +282,29 @@ function renew_user_lock(string $user_id, array $current_user): bool
 const USER_ROLES = ['auditeur', 'admin'];
 
 /**
+ * Politique de mot de passe fort.
+ *
+ * On exige une longueur minimale et au moins un caractère de chaque famille :
+ * majuscule, minuscule, chiffre et caractère spécial. Ce n'est pas au-delà de
+ * ça que la sécurité repose (le hachage côté serveur + le rate-limit le
+ * font), mais c'est un bon garde-fou contre les mots de passe triviaux.
+ */
+function password_is_strong(string $password): bool
+{
+    if (strlen($password) < 16) {
+        return false;
+    }
+    return (bool) preg_match('/[A-Z]/', $password)
+        && (bool) preg_match('/[a-z]/', $password)
+        && (bool) preg_match('/[0-9]/', $password)
+        && (bool) preg_match('/[^A-Za-z0-9]/', $password);
+}
+
+function password_policy_error(): string
+{
+    return 'Le mot de passe doit faire au moins 16 caractères et contenir une majuscule, une minuscule, un chiffre et un caractère spécial.';
+}
+/**
  * @return array{success: bool, error?: string, user?: array}
  */
 function create_user_record(string $login, string $name, string $role, string $password): array
@@ -298,8 +321,8 @@ function create_user_record(string $login, string $name, string $role, string $p
     if (!in_array($role, USER_ROLES, true)) {
         return ['success' => false, 'error' => 'Rôle invalide.'];
     }
-    if (strlen($password) < 8) {
-        return ['success' => false, 'error' => 'Le mot de passe doit faire au moins 8 caractères.'];
+    if (!password_is_strong($password)) {
+        return ['success' => false, 'error' => password_policy_error()];
     }
 
     return with_file_lock(USERS_FILE, function (string $raw) use ($login, $name, $role, $password) {
@@ -341,8 +364,8 @@ function update_user_record(string $user_id, array $changes, array $acting_user)
     if (isset($changes['role']) && !in_array($changes['role'], USER_ROLES, true)) {
         return ['success' => false, 'error' => 'Rôle invalide.'];
     }
-    if (isset($changes['password']) && strlen($changes['password']) < 8) {
-        return ['success' => false, 'error' => 'Le mot de passe doit faire au moins 8 caractères.'];
+    if (isset($changes['password']) && $changes['password'] !== '' && !password_is_strong($changes['password'])) {
+        return ['success' => false, 'error' => password_policy_error()];
     }
     if (isset($changes['name']) && trim($changes['name']) === '') {
         return ['success' => false, 'error' => 'Le nom affiché est requis.'];
@@ -410,8 +433,8 @@ function update_user_record(string $user_id, array $changes, array $acting_user)
  */
 function change_own_password(array $current_user, string $current_password, string $new_password): array
 {
-    if (strlen($new_password) < 8) {
-        return ['success' => false, 'error' => 'Le nouveau mot de passe doit faire au moins 8 caractères.'];
+    if (!password_is_strong($new_password)) {
+        return ['success' => false, 'error' => password_policy_error()];
     }
 
     return with_file_lock(USERS_FILE, function (string $raw) use ($current_user, $current_password, $new_password) {

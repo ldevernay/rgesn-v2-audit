@@ -198,8 +198,12 @@ $page_title = $is_edit ? 'Modifier un utilisateur' : 'Créer un utilisateur';
                         Mot de passe <?= $is_edit ? '(laisser vide pour ne pas le changer)' : '' ?>
                     </label>
                     <input type="password" class="form-control" id="password" name="password"
-                           minlength="8" <?= $is_edit ? '' : 'required' ?> <?= $readonly ? 'disabled' : '' ?>
-                           autocomplete="new-password">
+                           minlength="16" <?= $is_edit ? '' : 'required' ?> <?= $readonly ? 'disabled' : '' ?>
+                           pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{16,}"
+                           title="Au moins 16 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial."
+                           autocomplete="new-password" minlength="16"
+                           pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{16,}"
+                           title="Au moins 16 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.">
                     <div class="form-text">8 caractères minimum.</div>
                 </div>
 

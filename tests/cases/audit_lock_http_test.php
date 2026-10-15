@@ -23,7 +23,7 @@ if (!file_exists($fixtureRoot . '/api.php')) {
     exit(1);
 }
 
-$password = 'test-password-123';
+$password = 'Test-password-123!';
 $ownerId  = 'lock-owner-1';
 $contribId = 'lock-contrib-1';
 

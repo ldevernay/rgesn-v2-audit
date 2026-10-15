@@ -41,7 +41,7 @@ if (!file_exists($fixtureRoot . '/api.php')) {
 
 // ─── Fixtures : un utilisateur, un audit public, un audit privé ─────────────
 
-$password = 'test-password-123';
+$password = 'Test-password-123!';
 $userId   = 'http-test-user';
 
 file_put_contents($fixtureRoot . '/data/users.json', json_encode([
