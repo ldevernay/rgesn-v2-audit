@@ -258,33 +258,41 @@ function ods_read_workbook(string $path): array
             if ($repeatRows < 1) { $repeatRows = 1; }
             if ($repeatRows > 2000) { $repeatRows = 2000; }
 
-            for ($r = 0; $r < $repeatRows; $r++) {
-                $cells = [];
-                $colIndex = 0;
-                preg_match_all('/<table:table-cell\b([^>]*?)(?:\/>|>(.*?)<\/table:table-cell>)/s', $rowInner, $cellMatches, PREG_SET_ORDER);
-                foreach ($cellMatches as $cm) {
-                    $cattrs = $cm[1];
-                    $cinner = isset($cm[2]) ? $cm[2] : '';
-                    $repeatCols = 1;
-                    if (preg_match('/table:number-columns-repeated="(\d+)"/', $cattrs, $cr)) {
-                        $repeatCols = (int) $cr[1];
-                    }
-                    if ($repeatCols < 1) { $repeatCols = 1; }
-                    if ($repeatCols > 2000) { $repeatCols = 2000; }
+            // Le contenu d'une ligne répétée est toujours identique : les
+            // cellules ne sont donc calculées qu'une seule fois.
+            //
+            // Les cellules vides ne sont pas matérialisées (seule leur position
+            // compte). Sans cela, LibreOffice qui écrit des milliers de
+            // cellules « répétées à vide » en fin de feuille faisait fabriquer
+            // plusieurs millions de cellules vides : l'import ODS prenait
+            // ~20 s et 50 Mo de mémoire.
+            $cells = [];
+            $colIndex = 0;
+            preg_match_all('/<table:table-cell\b([^>]*?)(?:\/>|>(.*?)<\/table:table-cell>)/s', $rowInner, $cellMatches, PREG_SET_ORDER);
+            foreach ($cellMatches as $cm) {
+                $cattrs = $cm[1];
+                $cinner = isset($cm[2]) ? $cm[2] : '';
+                $repeatCols = 1;
+                if (preg_match('/table:number-columns-repeated="(\d+)"/', $cattrs, $cr)) {
+                    $repeatCols = (int) $cr[1];
+                }
+                if ($repeatCols < 1) { $repeatCols = 1; }
 
-                    $val = ods_cell_value($cattrs, $cinner);
-                    for ($c = 0; $c < $repeatCols; $c++) {
-                        $cells[ods_col_letter($colIndex)] = $val;
-                        $colIndex++;
-                    }
+                $val = ods_cell_value($cattrs, $cinner);
+                if (trim((string) $val) !== '') {
+                    $cells[ods_col_letter($colIndex)] = $val;
                 }
-                $hasValue = false;
-                foreach ($cells as $v) {
-                    if (trim((string) $v) !== '') { $hasValue = true; break; }
-                }
-                if ($hasValue) {
-                    $rows[$rowNum] = $cells;
-                }
+                $colIndex += $repeatCols;
+            }
+
+            // Une ligne entièrement vide n'apporte rien : inutile de la
+            // répéter (et de gonfler le tableau de résultats).
+            if (empty($cells)) {
+                continue;
+            }
+
+            for ($r = 0; $r < $repeatRows; $r++) {
+                $rows[$rowNum] = $cells;
                 $rowNum++;
             }
         }
@@ -336,22 +344,123 @@ function ods_cell_value(string $attrs, string $inner): string
 
 function ods_col_letter(int $index): string
 {
-    $index++;
+    return rgesn_col_letter($index + 1);
+}
+
+/**
+ * Lettre de colonne correspondant à un index 1-based (1 => A, 26 => Z, 27 => AA).
+ */
+function rgesn_col_letter(int $index): string
+{
     $letters = '';
     while ($index > 0) {
-        $mod = ($index - 1) % 26;
-        $letters = chr(65 + $mod) . $letters;
-        $index = intdiv($index - 1, 26);
+        $index--;
+        $letters = chr(65 + ($index % 26)) . $letters;
+        $index = intdiv($index, 26);
     }
     return $letters;
 }
 
-function rgesn_row_cells_sorted(array $cells): array
+/**
+ * Colonne située $delta colonnes à droite (ou à gauche) de $col.
+ */
+function rgesn_col_shift(string $col, int $delta): string
+{
+    return rgesn_col_letter(rgesn_col_index($col) + $delta);
+}
+
+/**
+ * Valeur d'une cellule, normalisée (espaces coupés), ou chaîne vide.
+ */
+function rgesn_cell(array $cells, string $col): string
+{
+    return trim((string) ($cells[$col] ?? ''));
+}
+
+/**
+ * Lettres de colonne d'une ligne, triées de gauche à droite.
+ */
+function rgesn_row_cols_sorted(array $cells): array
 {
     $keys = array_keys($cells);
     usort($keys, fn($a, $b) => rgesn_col_index($a) <=> rgesn_col_index($b));
+    return $keys;
+}
+
+/**
+ * Normalise un intitulé de colonne pour pouvoir le comparer sans tenir
+ * compte de la casse, des accents, de la ponctuation ni des sauts de ligne.
+ */
+function rgesn_normalize_label(string $s): string
+{
+    $s = strtolower(trim($s));
+    $s = strtr($s, [
+        'à' => 'a', 'â' => 'a', 'ä' => 'a', 'å' => 'a',
+        'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e',
+        'î' => 'i', 'ï' => 'i', 'í' => 'i',
+        'ô' => 'o', 'ö' => 'o', 'ó' => 'o',
+        'û' => 'u', 'ù' => 'u', 'ü' => 'u', 'ú' => 'u',
+        'ç' => 'c', 'œ' => 'oe', 'æ' => 'ae',
+        '’' => ' ', '‘' => ' ', "\u{00A0}" => ' ',
+        '«' => ' ', '»' => ' ', '-' => ' ',
+    ]);
+    $s = preg_replace('/[^\p{L}\p{N}\s]+/u', ' ', $s);
+    $s = preg_replace('/\s+/u', ' ', $s);
+    return trim($s);
+}
+
+/**
+ * Une ligne d'en-tête (notes de début de feuille ou intitulés de colonnes)
+ * n'est pas une ligne de données : elle ne doit jamais être rattachée à un
+ * critère. Sans cette détection, les intitulés de colonnes ("Actions à
+ * mener", "Qui fait ?", "Pour quand ?") étaient importés comme des données.
+ */
+function rgesn_row_is_header(array $cells): bool
+{
+    // Intitulés de colonnes : la cellule doit commencer par l'intitulé.
+    static $prefixes = [
+        'libelle du critere',
+        'actions a mener',
+        'qui fait',
+        'pour quand',
+        'niveau de priorite',
+        'niveau de difficulte',
+        'date de l evaluation',
+        'evolutions potentielles',
+        'synthese du moyen de test',
+    ];
+
+    // Phrases de la ligne de notes en tête de feuille : elles peuvent être
+    // precedées d'un texte libre (« Le contenu de ces colonnes… »).
+    static $contains = [
+        'contenu de ces colonnes',
+        'colonnes a usage interne',
+        'colonnes pour aider',
+    ];
+
+    foreach ($cells as $value) {
+        $norm = rgesn_normalize_label((string) $value);
+        if ($norm === '') {
+            continue;
+        }
+        foreach ($prefixes as $marker) {
+            if (strpos($norm, $marker) === 0) {
+                return true;
+            }
+        }
+        foreach ($contains as $marker) {
+            if (strpos($norm, $marker) !== false) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function rgesn_row_cells_sorted(array $cells): array
+{
     $out = [];
-    foreach ($keys as $k) {
+    foreach (rgesn_row_cols_sorted($cells) as $k) {
         $out[] = $cells[$k];
     }
     return $out;
@@ -417,37 +526,60 @@ function rgesn_apply_import(array $audit, array $sheets): array
     }
 
     // ── Critères ─────────────────────────────────────────────────────────────
-    $lastId = null;
     foreach ($sheets as $name => $rows) {
         if (stripos($name, 'score') !== false) {
             continue;
         }
-        foreach ($rows as $cells) {
-            $sorted = rgesn_row_cells_sorted($cells);
 
-            $idIndex = null;
-            foreach ($sorted as $idx => $val) {
-                if (preg_match('/^\d+\.\d+$/', trim((string) $val))) {
-                    $idIndex = $idx;
+        // Le critère « courant » est propre à chaque feuille.
+        //
+        // Sans cette remise à zéro, les deux lignes d'en-tête de la feuille
+        // suivante (notes de début de feuille + intitulés de colonnes) étaient
+        // rattachées au dernier critère de la feuille précédente : le champ
+        // « Actions à mener » du critère 1.10, vide dans le fichier, recevait
+        // alors l'intitulé de colonne « Actions à mener ».
+        $lastId    = null;
+        $lastIdCol = null;
+
+        foreach ($rows as $cells) {
+            // Notes de début de feuille / ligne d'intitulés de colonnes :
+            // ce ne sont pas des données.
+            if (rgesn_row_is_header($cells)) {
+                continue;
+            }
+
+            $cols = rgesn_row_cols_sorted($cells);
+
+            // Colonne de l'identifiant du critère : colonne B en XLSX
+            // (colonne A réservée au libellé de la thématique), colonne A en
+            // ODS. On la cherche par son contenu, puis on se réfère aux
+            // autres colonnes par position relative : le décalage est ainsi
+            // le même pour les deux formats.
+            $idCol = null;
+            foreach ($cols as $col) {
+                if (preg_match('/^\d+\.\d+$/', trim((string) ($cells[$col] ?? '')))) {
+                    $idCol = $col;
                     break;
                 }
             }
 
-            if ($idIndex !== null) {
-                $id = trim((string) $sorted[$idIndex]);
-                $lastId = $id;
+            if ($idCol !== null) {
+                $id = trim((string) $cells[$idCol]);
+                $lastId    = $id;
+                $lastIdCol = $idCol;
                 if (!isset($index[$id])) {
-                    $lastId = null;
+                    $lastId    = null;
+                    $lastIdCol = null;
                     continue;
                 }
                 $k = $index[$id];
 
-                $pri = trim((string) ($sorted[$idIndex + 2] ?? ''));
+                $pri = rgesn_cell($cells, rgesn_col_shift($idCol, 2));
                 if (in_array($pri, ['Prioritaire', 'Recommandé', 'Modéré'], true)) {
                     $audit['criteria'][$k]['priority'] = $pri;
                 }
 
-                $statusRaw = trim((string) ($sorted[$idIndex + 3] ?? ''));
+                $statusRaw = rgesn_cell($cells, rgesn_col_shift($idCol, 3));
                 if ($statusRaw !== '') {
                     if (isset($statusMap[$statusRaw])) {
                         $audit['criteria'][$k]['status'] = $statusMap[$statusRaw];
@@ -456,17 +588,17 @@ function rgesn_apply_import(array $audit, array $sheets): array
                     }
                 }
 
-                $diff = trim((string) ($sorted[$idIndex + 6] ?? ''));
+                $diff = rgesn_cell($cells, rgesn_col_shift($idCol, 6));
                 if (in_array($diff, ['Fort', 'Moyen', 'Faible'], true)) {
                     $audit['criteria'][$k]['difficulty'] = $diff;
                 }
 
-                $action = trim((string) ($sorted[$idIndex + 7] ?? ''));
+                $action = rgesn_cell($cells, rgesn_col_shift($idCol, 7));
                 if ($action !== '') {
                     $audit['criteria'][$k]['action_text'] = $action;
                 }
 
-                $whoRaw = trim((string) ($sorted[$idIndex + 8] ?? ''));
+                $whoRaw = rgesn_cell($cells, rgesn_col_shift($idCol, 8));
                 if ($whoRaw !== '') {
                     $parts = preg_split('/[\n,+;]+/', $whoRaw);
                     $tags = [];
@@ -483,7 +615,7 @@ function rgesn_apply_import(array $audit, array $sheets): array
                     }
                 }
 
-                $whenRaw = trim((string) ($sorted[$idIndex + 9] ?? ''));
+                $whenRaw = rgesn_cell($cells, rgesn_col_shift($idCol, 9));
                 if ($whenRaw !== '') {
                     if (preg_match('#^(\d{1,2})/(\d{1,2})/(\d{4})$#', $whenRaw, $m)) {
                         $audit['criteria'][$k]['action_when'] = sprintf('%04d-%02d', $m[3], $m[2]);
@@ -492,7 +624,7 @@ function rgesn_apply_import(array $audit, array $sheets): array
                     }
                 }
 
-                $evalDate = trim((string) ($sorted[$idIndex + 4] ?? ''));
+                $evalDate = rgesn_cell($cells, rgesn_col_shift($idCol, 4));
                 if ($evalDate !== '') {
                     if (preg_match('#^(\d{1,2})/(\d{1,2})/(\d{4})$#', $evalDate, $m)) {
                         $audit['criteria'][$k]['evaluation_date'] = sprintf('%04d-%02d-%02d', $m[3], $m[2], $m[1]);
@@ -500,30 +632,32 @@ function rgesn_apply_import(array $audit, array $sheets): array
                 }
 
             } else {
-                // Ligne complémentaire (commentaire)
-                if ($lastId !== null && isset($index[$lastId])) {
-                    $k = $index[$lastId];
+                // Ligne complémentaire : l'utilisateur a développé sa réponse
+                // dans la colonne « Libellé du critère », c.-à-d. la colonne
+                // immédiatement à droite de celle de l'identifiant.
+                //
+                // On ne prend PAS la première cellule « longue » de la ligne :
+                // les colonnes de droite de la ligne d'en-tête (« Actions à
+                // mener », « Qui fait ? », « Pour quand ? ») et les colonnes
+                // d'exemple du modèle ne sont pas des réponses.
+                if ($lastId === null || $lastIdCol === null || !isset($index[$lastId])) {
+                    continue;
+                }
+                $k = $index[$lastId];
 
-                    $candidate = '';
-                    foreach ($sorted as $v) {
-                        $t = trim((string) $v);
-                        if ($t !== '' && strlen($t) >= 20) {
-                            $candidate = $t;
-                            break;
-                        }
-                    }
-                    if ($candidate !== '') {
-                        $label = (string) ($audit['criteria'][$k]['label'] ?? '');
-                        if ($candidate !== $label) {
-                            $existing = trim((string) ($audit['criteria'][$k]['comment'] ?? ''));
-                            if ($existing === '') {
-                                $audit['criteria'][$k]['comment'] = $candidate;
-                            } elseif (strpos($existing, $candidate) === false) {
-                                $audit['criteria'][$k]['comment'] = $existing . "\n" . $candidate;
-                            }
-                        }
-                    }
+                $candidate = rgesn_cell($cells, rgesn_col_shift($lastIdCol, 1));
+                if ($candidate === '') {
+                    continue;
+                }
 
+                $label = (string) ($audit['criteria'][$k]['label'] ?? '');
+                if ($candidate !== $label) {
+                    $existing = trim((string) ($audit['criteria'][$k]['comment'] ?? ''));
+                    if ($existing === '') {
+                        $audit['criteria'][$k]['comment'] = $candidate;
+                    } elseif (strpos($existing, $candidate) === false) {
+                        $audit['criteria'][$k]['comment'] = $existing . "\n" . $candidate;
+                    }
                 }
             }
         }
@@ -551,10 +685,62 @@ function rgesn_import_ods(array $audit, string $path): array
     return rgesn_apply_import($audit, $sheets);
 }
 
+/**
+ * Indique si l'archive ZIP contient l'entrée $entry.
+ */
+function rgesn_zip_entry_exists(string $path, string $entry): bool
+{
+    $data = @file_get_contents($path);
+    if ($data === false) {
+        return false;
+    }
+    $pos = strrpos($data, "\x50\x4b\x05\x06");
+    if ($pos === false) {
+        return false;
+    }
+    $cdSize   = unpack('V', substr($data, $pos + 12, 4))[1];
+    $cdOffset = unpack('V', substr($data, $pos + 16, 4))[1];
+
+    $ptr = $cdOffset;
+    $end = $cdOffset + $cdSize;
+    while ($ptr < $end) {
+        if (substr($data, $ptr, 4) !== "PK\x01\x02") {
+            break;
+        }
+        $fnLen      = unpack('v', substr($data, $ptr + 28, 2))[1];
+        $extraLen   = unpack('v', substr($data, $ptr + 30, 2))[1];
+        $commentLen = unpack('v', substr($data, $ptr + 32, 2))[1];
+        if (substr($data, $ptr + 46, $fnLen) === $entry) {
+            return true;
+        }
+        $ptr += 46 + $fnLen + $extraLen + $commentLen;
+    }
+    return false;
+}
+
+/**
+ * Format réel du tableur, déduit de son contenu et non de son nom.
+ *
+ * Indispensable : le fichier téléversé est recopié dans un fichier
+ * temporaire dont le nom n'a pas d'extension, si bien que le seul test sur
+ * l'extension renvoyait systématiquement les fichiers ODS vers le lecteur
+ * XLSX (erreur « workbook.xml illisible »).
+ */
+function rgesn_detect_spreadsheet_format(string $path): string
+{
+    if (rgesn_zip_entry_exists($path, 'xl/workbook.xml')) {
+        return 'xlsx';
+    }
+    if (rgesn_zip_entry_exists($path, 'content.xml')) {
+        return 'ods';
+    }
+    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+    return $ext === 'ods' ? 'ods' : 'xlsx';
+}
+
 function rgesn_import_spreadsheet(array $audit, string $path): array
 {
-    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-    if ($ext === 'ods') {
+    if (rgesn_detect_spreadsheet_format($path) === 'ods') {
         return rgesn_import_ods($audit, $path);
     }
     return rgesn_import_xlsx($audit, $path);
@@ -591,10 +777,20 @@ function action_import_audit_xlsx(array $input, array $current_user): never
         if (!in_array($ext, ['xlsx', 'ods'], true)) {
             json_response(['error' => 'Le fichier doit être au format XLSX ou ODS'], 400);
         }
-        $tmpPath = tempnam(sys_get_temp_dir(), 'rgesn_xlsx_');
-        if ($tmpPath === false || !move_uploaded_file($f['tmp_name'], $tmpPath)) {
+        // Le fichier temporaire conserve l'extension d'origine : le format
+        // du tableur peut ainsi être identifié même si le nom du fichier
+        // téléversé est trompeur.
+        $tmpBase = tempnam(sys_get_temp_dir(), 'rgesn_xlsx_');
+        if ($tmpBase === false) {
             json_response(['error' => 'Enregistrement temporaire impossible'], 500);
         }
+        $tmpPath = $tmpBase . '.' . $ext;
+        if (!move_uploaded_file($f['tmp_name'], $tmpPath)) {
+            @unlink($tmpBase);
+            @unlink($tmpPath);
+            json_response(['error' => 'Enregistrement temporaire impossible'], 500);
+        }
+        @unlink($tmpBase);
         $cleanup = true;
     }
 
