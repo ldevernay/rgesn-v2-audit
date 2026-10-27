@@ -31,6 +31,7 @@ if (!defined('CRITERES_FILE')) {
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/audit_store.php';
+require_once __DIR__ . '/includes/xlsx_importer.php';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -192,6 +193,9 @@ if (!defined('RGESN_API_TESTING')) {
             break;
         case 'update_audit':
             action_update_audit($input, require_login_and_csrf_api());
+            break;
+        case 'import_audit_xlsx':
+            action_import_audit_xlsx($input, require_login_and_csrf_api());
             break;
         case 'delete_audit':
             action_delete_audit($input, require_login_and_csrf_api());
