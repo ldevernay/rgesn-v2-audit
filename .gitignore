@@ -6,6 +6,7 @@ data/audits/*
 data/security
 data/security/*
 data/users.json
+data/users.json.lock
 
 # Temporary files
 tmp

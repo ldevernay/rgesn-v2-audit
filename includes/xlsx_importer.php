@@ -482,6 +482,7 @@ function rgesn_apply_import(array $audit, array $sheets): array
         'Non validé'      => 'non-conforme',
         'Non applicable'  => 'non-applicable',
         'À évaluer'       => 'non-testé',
+        'En cours'        => 'non-conforme'
     ];
 
     // ── Projet / auditeur ────────────────────────────────────────────────────
